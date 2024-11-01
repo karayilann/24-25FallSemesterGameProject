@@ -42,11 +42,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6422357652515979744, guid: a7945dfd25c8b4345a198dd7cdf595bc, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 127.07198
+      value: 99.56
       objectReference: {fileID: 0}
     - target: {fileID: 6422357652515979744, guid: a7945dfd25c8b4345a198dd7cdf595bc, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 155.70583
+      value: 151.9517
       objectReference: {fileID: 0}
     - target: {fileID: 6422357652515979744, guid: a7945dfd25c8b4345a198dd7cdf595bc, type: 3}
       propertyPath: m_LocalPosition.x
@@ -78,11 +78,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6422357652515979744, guid: a7945dfd25c8b4345a198dd7cdf595bc, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: 63.53599
+      value: 208.5
       objectReference: {fileID: 0}
     - target: {fileID: 6422357652515979744, guid: a7945dfd25c8b4345a198dd7cdf595bc, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -77.85291
+      value: -75.97585
       objectReference: {fileID: 0}
     - target: {fileID: 6422357652515979744, guid: a7945dfd25c8b4345a198dd7cdf595bc, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
@@ -102,11 +102,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7589689377390473790, guid: a7945dfd25c8b4345a198dd7cdf595bc, type: 3}
       propertyPath: m_fontSize
-      value: 11.35
+      value: 10.35
       objectReference: {fileID: 0}
     - target: {fileID: 7589689377390473790, guid: a7945dfd25c8b4345a198dd7cdf595bc, type: 3}
       propertyPath: m_fontSizeMin
-      value: 5
+      value: 10.35
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 4419357391805644687, guid: a7945dfd25c8b4345a198dd7cdf595bc, type: 3}

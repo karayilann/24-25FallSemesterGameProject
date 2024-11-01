@@ -11,8 +11,12 @@ namespace _Project.Scripts.Card
     {
         [SerializeField] private int value = 1;
         [SerializeField] private CardType type;
+        
         private bool _isClicked;
         [SerializeField] private Vector3 _scaleAnimation;
+        [SerializeField] private Vector2 _cardPlayZonePosition;
+        
+        [SerializeField] private RectTransform _playZone;
         
         public TextMeshProUGUI cardTypeText;
 
@@ -42,10 +46,15 @@ namespace _Project.Scripts.Card
 
         public void OnPointerDown(PointerEventData eventData)
         {
-            Debug.Log("Kart seçildi: " + gameObject.name + " Tür: " + Type);
+            // Debug.Log("Kart seçildi: " + gameObject.name + " Tür: " + Type);
             _isClicked = true;
-            GameManager.Instance.playerCard = this;
-            Destroy(gameObject);
+            //GameManager.Instance.playerCard = this;
+            transform.DOMove(_playZone.transform.position, .5f).OnComplete(() =>
+            {
+                transform.SetParent(_playZone);
+                CalculateCardPosition();
+                
+            });
         }
 
         public void OnPointerEnter(PointerEventData eventData)
@@ -63,6 +72,26 @@ namespace _Project.Scripts.Card
             transform.DOScale(new Vector3(1,1,1),.3f);
             DOTween.Kill(2, true);
         }
+
+        // Ortaya doğru değil doğrudan gideceği pozisyona ayarla
+        public void CalculateCardPosition()
+        {
+            int cardCount = _playZone.childCount;
+            float cardWidth = transform.GetComponent<RectTransform>().rect.width;
+            float totalWidth = cardWidth * cardCount;
+    
+            float startPositionX = _playZone.localPosition.x - _playZone.localPosition.x / 2f;
+
+            for (int i = 0; i < cardCount; i++)
+            {
+                RectTransform card = _playZone.GetChild(i) as RectTransform;
+                if (card != null)
+                {
+                    card.anchoredPosition = new Vector2(startPositionX + i * cardWidth, card.anchoredPosition.y);
+                }
+            }
+        }
+
     }
 
     public enum CardType

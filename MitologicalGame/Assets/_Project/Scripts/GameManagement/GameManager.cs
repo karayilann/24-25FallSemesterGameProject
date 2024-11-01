@@ -50,8 +50,6 @@ namespace _Project.Scripts.GameManagement
             for (int i = 1; i <= 5; i++)
             {
                 AddCardToDeck(i, CardType.Normal);
-                AddCardToDeck(i, CardType.BlockOpponent);
-                AddCardToDeck(i, CardType.DoubleScore);
             }
         }
 

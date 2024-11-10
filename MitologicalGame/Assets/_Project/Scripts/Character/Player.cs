@@ -7,6 +7,6 @@ namespace _Project.Scripts.Character
     using _Project.Scripts.Card;
     public class Player : CharacterBase
     {
-        public List<Card> playerDeck;
+        public List<CancelledCard> playerDeck;
     }
 }

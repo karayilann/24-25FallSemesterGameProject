@@ -7,10 +7,10 @@ namespace _Project.Scripts.Card
     using UnityEngine;
     using UnityEngine.EventSystems;
 
-    public class Card : MonoBehaviour, IPointerDownHandler, IPointerEnterHandler, IPointerExitHandler
+    public class CancelledCard : MonoBehaviour, IPointerDownHandler, IPointerEnterHandler, IPointerExitHandler
     {
         [SerializeField] private int value = 1;
-        [SerializeField] private CardType type;
+        [SerializeField] private OldCardType type;
         
         private bool _isClicked;
         [SerializeField] private Vector3 _scaleAnimation;
@@ -21,18 +21,18 @@ namespace _Project.Scripts.Card
         public TextMeshProUGUI cardTypeText;
 
         public int Value => value;
-        public CardType Type => type;
+        public OldCardType Type => type;
 
         [SerializeField] private float hoverOffset = 5f;
         private Vector3 _initialPosition;
 
-        public Card(int i, CardType normal)
+        public CancelledCard(int i, OldCardType normal)
         {
             value = i;
             type = normal;
         }
         
-        public void Initialize(int value, CardType type)
+        public void Initialize(int value, OldCardType type)
         {
             this.value = value;
             this.type = type;
@@ -94,7 +94,7 @@ namespace _Project.Scripts.Card
 
     }
 
-    public enum CardType
+    public enum OldCardType
     {
         Normal,
         BlockOpponent,

@@ -4,23 +4,24 @@ using UnityEngine;
 using _Project.Scripts.AI;
 using _Project.Scripts.Card;
 using _Project.Scripts.Character;
+using UnityEngine.Serialization;
 
 namespace _Project.Scripts.GameManagement
 {
     using _Project.Scripts.Card;
-    public class GameManager : MonoBehaviour
+    public class CancelledGameManager : MonoBehaviour
     {
-        public static GameManager Instance { get; private set; }
+        public static CancelledGameManager Instance { get; private set; }
 
         public Player player;
         public AIPlayer ai;
         [SerializeField] private GameObject cardPrefab;
-        [SerializeField] private List<Card> _aiDeck;
+        [SerializeField] private List<CancelledCard> _aiDeck;
 
         private int _turnCount;
         private bool _isPlayerBlocked;
         private bool _isAiBlocked;
-        public Card playerCard;
+        [FormerlySerializedAs("playerCard")] public CancelledCard playerCancelledCard;
 
         private void Awake()
         {
@@ -39,31 +40,31 @@ namespace _Project.Scripts.GameManagement
             // player = GameObject.Find("Player").GetComponent<Player>();
             // ai = GameObject.Find("AIPlayer").GetComponent<AIPlayer>();
             InitializeDeck();
-            ai = new AIPlayer(new List<Card>(_aiDeck));
+            ai = new AIPlayer(new List<CancelledCard>(_aiDeck));
             _turnCount = 0;
             StartCoroutine(PlayTurn());
         }
 
         void InitializeDeck()
         {
-            _aiDeck = new List<Card>();
+            _aiDeck = new List<CancelledCard>();
             for (int i = 1; i <= 5; i++)
             {
-                AddCardToDeck(i, CardType.Normal);
+                AddCardToDeck(i, OldCardType.Normal);
             }
         }
 
-        void AddCardToDeck(int value, CardType type)
+        void AddCardToDeck(int value, OldCardType type)
         {
             GameObject cardObject = Instantiate(cardPrefab);
-            Card card = cardObject.GetComponent<Card>();
-            card.Initialize(value, type);
-            _aiDeck.Add(card);
+            CancelledCard cancelledCard = cardObject.GetComponent<CancelledCard>();
+            cancelledCard.Initialize(value, type);
+            _aiDeck.Add(cancelledCard);
         }
 
         IEnumerator PlayTurn()
         {
-            Card aiCard = null;
+            CancelledCard aiCancelledCard = null;
             
             while (_turnCount < 5)
             {
@@ -72,57 +73,57 @@ namespace _Project.Scripts.GameManagement
  
                 if (_turnCount % 2 == 0 && !_isPlayerBlocked)
                 {
-                    playerCard = null;
+                    playerCancelledCard = null;
                     Debug.Log("Oyuncu kart seçiyor...");
-                    if (playerCard == null) break;
-                    Debug.Log("Oyuncu kart seçti: " + playerCard.Value + " Tür: " + playerCard.Type);
+                    if (playerCancelledCard == null) break;
+                    Debug.Log("Oyuncu kart seçti: " + playerCancelledCard.Value + " Tür: " + playerCancelledCard.Type);
                 }
                 else if(_turnCount %2 == 1 && !_isAiBlocked)
                 {
-                    playerCard = null;
+                    playerCancelledCard = null;
                     Debug.Log("AI kart seçiyor...");
-                    aiCard = ai.DrawCard();
-                    Debug.Log("AI kart seçti: " + aiCard.Value + " Tür: " + aiCard.Type);
+                    aiCancelledCard = ai.DrawCard();
+                    Debug.Log("AI kart seçti: " + aiCancelledCard.Value + " Tür: " + aiCancelledCard.Type);
                 }
-                ApplyCardEffects(playerCard, aiCard);
+                ApplyCardEffects(playerCancelledCard, aiCancelledCard);
                 _turnCount++;
                 yield return new WaitForSeconds(1f);
             }
             DetermineWinner();
         }
 
-        void ApplyCardEffects(Card playerCard, Card aiCard)
+        void ApplyCardEffects(CancelledCard playerCancelledCard, CancelledCard aiCancelledCard)
         {
-            if (playerCard != null)
+            if (playerCancelledCard != null)
             {
-                switch (playerCard.Type)
+                switch (playerCancelledCard.Type)
                 {
-                    case CardType.BlockOpponent:
+                    case OldCardType.BlockOpponent:
                         _isAiBlocked = true;
                         break;
-                    case CardType.DoubleScore:
-                        if (playerCard.Value > (aiCard?.Value ?? 0)) player.Score += 2;
+                    case OldCardType.DoubleScore:
+                        if (playerCancelledCard.Value > (aiCancelledCard?.Value ?? 0)) player.Score += 2;
                         else player.Score++;
                         break;
                     default:
-                        if (playerCard.Value > (aiCard?.Value ?? 0)) player.Score++;
+                        if (playerCancelledCard.Value > (aiCancelledCard?.Value ?? 0)) player.Score++;
                         break;
                 }
             }
 
-            if (aiCard != null)
+            if (aiCancelledCard != null)
             {
-                switch (aiCard.Type)
+                switch (aiCancelledCard.Type)
                 {
-                    case CardType.BlockOpponent:
+                    case OldCardType.BlockOpponent:
                         _isPlayerBlocked = true;
                         break;
-                    case CardType.DoubleScore:
-                        if (aiCard.Value > (playerCard?.Value ?? 0)) ai.Score += 2;
+                    case OldCardType.DoubleScore:
+                        if (aiCancelledCard.Value > (playerCancelledCard?.Value ?? 0)) ai.Score += 2;
                         else ai.Score++;
                         break;
                     default:
-                        if (aiCard.Value > (playerCard?.Value ?? 0)) ai.Score++;
+                        if (aiCancelledCard.Value > (playerCancelledCard?.Value ?? 0)) ai.Score++;
                         break;
                 }
             }

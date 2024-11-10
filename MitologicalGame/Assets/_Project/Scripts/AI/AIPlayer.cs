@@ -7,19 +7,19 @@ namespace _Project.Scripts.AI
     using _Project.Scripts.Card;
     public class AIPlayer : CharacterBase
     {
-        public List<Card> deck;
+        public List<CancelledCard> deck;
         
-        public AIPlayer(List<Card> deck)
+        public AIPlayer(List<CancelledCard> deck)
         {
             this.deck = deck;
         }
 
-        public Card DrawCard()
+        public CancelledCard DrawCard()
         {
             int index = Random.Range(0, deck.Count);
-            Card card = deck[index];
+            CancelledCard cancelledCard = deck[index];
             deck.RemoveAt(index);
-            return card;
+            return cancelledCard;
         }
         
     }

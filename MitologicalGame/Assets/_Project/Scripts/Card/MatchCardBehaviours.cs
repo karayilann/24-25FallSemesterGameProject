@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using _Project.Scripts.GameManagement;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -12,8 +13,9 @@ namespace _Project.Scripts.Card
     {
         public CardContainer cardContainer;
         public Image imageComponent;
+        public TextMeshProUGUI cardTypeTMP;
         private List<Transform> _list;
-        int _index;
+        private int _index;
         private CardType _cardType;
         public CardType CardType => _cardType;
         private CardStatus _cardStatus;
@@ -34,9 +36,9 @@ namespace _Project.Scripts.Card
         public void Initialize()
         {
             _cardType = (CardType)Random.Range(0, Enum.GetValues(typeof(CardType)).Length);
-            _cardStatus = (CardStatus)Random.Range(0, Enum.GetValues(typeof(CardStatus)).Length);
+            _cardStatus = CardStatus.Closed;
             imageComponent.color = SetCardImage();
-            //Debug.Log("Initialized Card with Type: " + _cardType);
+            Debug.Log("Initialized Card with Type: " + _cardType + " " + name);
         }
         
         public void OnPointerDown(PointerEventData eventData)
@@ -49,8 +51,24 @@ namespace _Project.Scripts.Card
                 return;
             }
             
-            Debug.Log("CardType: " + _cardType + " Index: " + _index + " Status: " + _cardStatus);            
-            //cardContainer.ClearCard(_index);
+            Debug.Log("CardType: " + _cardType + " Index: " + _index + " Status: " + _cardStatus);
+            
+            if (_cardStatus == CardStatus.Closed)
+            {
+                _cardStatus = CardStatus.Opened;
+                imageComponent.color = SetCardImage();
+                cardTypeTMP.text = _cardType.ToString();
+                GameManager.Instance.OnCardSelected(_cardType);
+            }
+            else
+            {
+                _cardStatus = CardStatus.Closed;
+                imageComponent.color = SetCardImage();
+                cardTypeTMP.text = "";
+                GameManager.Instance.OnCardDeselected(_cardType);
+            }
+
+            // cardContainer.ClearCard(_index); // İsteğe bağlı, kartı temizlemek için kullanılabilir
         }
         
         public Color32 SetCardImage()
@@ -62,18 +80,20 @@ namespace _Project.Scripts.Card
             
             if (_cardStatus == CardStatus.Opened)
             {
-                switch ((int)_cardType)
+                switch (_cardType)
                 {
-                    case 0:
+                    case CardType.Fear:
                         return Color.yellow;
-                    case 1 :
+                    case CardType.Love:
                         return Color.magenta;
-                    case 2:
+                    case CardType.Hate:
                         return Color.red;
-                    case 3:
+                    case CardType.Joy:
                         return Color.green;
-                    case 4:
+                    case CardType.Sadness:
                         return Color.black;
+                    default:
+                        return Color.white;
                 }
             }
 

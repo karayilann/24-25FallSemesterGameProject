@@ -46,11 +46,6 @@ namespace _Project.Scripts.GameManagement
             if (requiredCardTypes.IsSubsetOf(selectedCardTypes))
             {
                 Debug.Log("Kazandın!");
-                if (winText != null)
-                {
-                    winText.text = "Kazandın!";
-                    winText.gameObject.SetActive(true);
-                }
             }
             else
             {

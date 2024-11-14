@@ -1255,7 +1255,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80fadd2965e08114d87957b5eb9671ec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  requiredCardTypesList: 000000000200000001000000
+  requiredCardTypesList: 0000000002000000
   winText: {fileID: 0}
 --- !u!1 &1135801127
 GameObject:

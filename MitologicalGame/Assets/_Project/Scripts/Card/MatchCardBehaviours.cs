@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using _Project.Scripts.GameManagement;
 using TMPro;
@@ -68,7 +69,8 @@ namespace _Project.Scripts.Card
                 GameManager.Instance.OnCardDeselected(_cardType);
             }
 
-            // cardContainer.ClearCard(_index); // İsteğe bağlı, kartı temizlemek için kullanılabilir
+            StartCoroutine(Timer());
+            // İsteğe bağlı, kartı temizlemek için kullanılabilir
         }
         
         public Color32 SetCardImage()
@@ -98,6 +100,12 @@ namespace _Project.Scripts.Card
             }
 
             return Color.white;
+        }
+
+        private IEnumerator Timer()
+        {
+            yield return new WaitForSeconds(3f);
+            cardContainer.ClearCard(_index);
         }
     }
     

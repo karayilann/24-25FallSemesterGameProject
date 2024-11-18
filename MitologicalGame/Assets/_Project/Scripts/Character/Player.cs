@@ -34,8 +34,6 @@ namespace _Project.Scripts.Character
                 
             }
 
-            
-
             if (Input.GetKey(KeyCode.W))
             {
                 _character.transform.Translate(0, 0, _movementSpeed);

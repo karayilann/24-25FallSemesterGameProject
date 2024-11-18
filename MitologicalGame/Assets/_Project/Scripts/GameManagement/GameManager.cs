@@ -6,7 +6,6 @@ using DG.Tweening;
 using TMPro;
 using UnityEngine;
 
-
 namespace _Project.Scripts.GameManagement
 {
     public class GameManager : MonoSingleton<GameManager>
@@ -14,69 +13,131 @@ namespace _Project.Scripts.GameManagement
         [SerializeField] private List<CardType> requiredCardTypesList;
         public GameObject popUpNotification;
         public TextMeshProUGUI popUpNotificationText;
-        private HashSet<CardType> requiredCardTypes;
-        public HashSet<CardType> selectedCardTypes = new HashSet<CardType>();
+        private HashSet<CardType> _requiredCardTypes;
+        public readonly HashSet<CardType> SelectedCardTypes = new HashSet<CardType>();
 
+        public Material dissolveMaterial;
+        public float dissolveSpeed = 0.01f;
+        private float _dissolveValue = 0f;
+        
         public List<MeshRenderer> cardMeshRenderers;
         
         public MatchCardBehaviours selected1;
         public MatchCardBehaviours selected2;
+        
+        private bool _isProcessingWin = false;
+        private bool _isProcessingReset = false;
+
+        private readonly Vector3 _cardClosedRotation = new Vector3(-180f, 90f, 0f);
 
         public int suspicionCount;
 
         private void Awake()
         {
-            requiredCardTypes = new HashSet<CardType>(requiredCardTypesList);
+            _requiredCardTypes = new HashSet<CardType>(requiredCardTypesList);
         }
  
         public void OnCardSelected(MatchCardBehaviours cardType)
         {
+            if (_isProcessingWin || _isProcessingReset) return;
+            
             if (selected1 == null)
             {
                 selected1 = cardType;
+                SelectedCardTypes.Add(cardType.CardType);
             }
-            else
+            else if (selected2 == null && cardType != selected1)
             {
                 selected2 = cardType;
+                SelectedCardTypes.Add(cardType.CardType);
+                
+                if (SelectedCardTypes.Count == requiredCardTypesList.Count)
+                {
+                    CheckWinCondition();
+                }
+                else
+                {
+                    StartCoroutine(ResetCardsWithDelay());
+                }
             }
-            selectedCardTypes.Add(cardType.CardType);
-            if (selectedCardTypes.Count == requiredCardTypesList.Count) CheckWinCondition();
         }
 
-        // Kartı geri kapatma olursa çalışacak fonksiyon
+        private IEnumerator ResetCardsWithDelay()
+        {
+            _isProcessingReset = true;
+            
+            yield return new WaitForSeconds(1f);
+            
+            if (selected1 != null)
+            {
+                selected1.transform.DORotate(_cardClosedRotation, 1f)
+                    .OnComplete(() => 
+                    {
+                        if(selected1 != null)
+                            selected1.transform.rotation = Quaternion.Euler(_cardClosedRotation);
+                    });
+            }
+            
+            if (selected2 != null)
+            {
+                selected2.transform.DORotate(_cardClosedRotation, 1f)
+                    .OnComplete(() => 
+                    {
+                        if(selected2 != null)
+                            selected2.transform.rotation = Quaternion.Euler(_cardClosedRotation);
+                    });
+            }
+
+            yield return new WaitForSeconds(1f);
+            
+            ResetSelections();
+            _isProcessingReset = false; 
+        }
+
         public void OnCardDeselected(MatchCardBehaviours cardType)
         {
-            selectedCardTypes.Remove(cardType.CardType);
+            if (_isProcessingWin || _isProcessingReset) return;
+            
+            SelectedCardTypes.Remove(cardType.CardType);
+            
+            if (cardType == selected1)
+                selected1 = null;
+            else if (cardType == selected2)
+                selected2 = null;
         }
-
-        public Material dissolveMaterial; // Shader'ın bağlı olduğu materyal
-        public float dissolveSpeed = 0.01f; // Efektin oynatma hızı
-        private float dissolveValue = 0f;
 
         private void CheckWinCondition()
         {
-            if (requiredCardTypes.IsSubsetOf(selectedCardTypes))
+            if (_requiredCardTypes.IsSubsetOf(SelectedCardTypes))
             {
                 Debug.Log("Kazandın!");
+                _isProcessingWin = true;
 
-                popUpNotification.transform.DOLocalMoveY(186.1807f, .5f).OnStart(() => popUpNotificationText.text = "Kazandın!").OnComplete(() =>
-                {
-                    StartCoroutine(PlayDissolveEffect(selected1.cardMeshRenderers));
-                    StartCoroutine(PlayDissolveEffect(selected2.cardMeshRenderers));
-                    
-                    popUpNotification.transform.DOLocalMoveY(252.2807f, .5f).SetDelay(1f).OnComplete( () =>
+                popUpNotification.transform.DOLocalMoveY(186.1807f, .5f)
+                    .OnStart(() => popUpNotificationText.text = "Kazandın!")
+                    .OnComplete(() =>
                     {
-                        
+                        StartCoroutine(PlayDissolveEffect(selected1.cardMeshRenderers));
+                        StartCoroutine(PlayDissolveEffect(selected2.cardMeshRenderers));
+                    
+                        popUpNotification.transform.DOLocalMoveY(252.2807f, .5f)
+                            .SetDelay(1f)
+                            .OnComplete(ResetSelections);
                     });
-                });
-                
-                // Dissolve efekti oynat
-                
             }
             else
             {
                 Debug.Log("Henüz kazanmıyorsun.");
+                StartCoroutine(ResetCardsWithDelay());
             }
+        }
+
+        private void ResetSelections()
+        {
+            selected1 = null;
+            selected2 = null;
+            SelectedCardTypes.Clear();
+            _isProcessingWin = false;
         }
 
         public IEnumerator PlayDissolveEffect(List<MeshRenderer> meshes)
@@ -89,36 +150,35 @@ namespace _Project.Scripts.GameManagement
                 yield break;
             }
 
+            Material[] dissolveInstance = { new Material(dissolveMaterial) };
+
             foreach (var mesh in meshes)
             {
-                Material[] originalMaterials = mesh.materials;
-                Material[] materialInstances = new Material[originalMaterials.Length];
-
-                for (int i = 0; i < originalMaterials.Length; i++)
+                if (mesh != null)
                 {
-                    materialInstances[i] = new Material(dissolveMaterial);
-                }
-        
-                mesh.materials = materialInstances;
-
-                dissolveValue = 0f;
-
-                while (dissolveValue < 1f)
-                {
-                    dissolveValue += Time.deltaTime * dissolveSpeed;
-
-                    foreach (var materialInstance in materialInstances)
-                    {
-                        materialInstance.SetFloat("_Cutoff", dissolveValue);
-                    }
-            
-                    yield return null;
+                    mesh.materials = dissolveInstance;
                 }
             }
 
+            _dissolveValue = 0f;
+
+            while (_dissolveValue < 1f)
+            {
+                _dissolveValue += Time.deltaTime * dissolveSpeed;
+                dissolveInstance[0].SetFloat("_Cutoff", _dissolveValue);
+                yield return null;
+            }
+
+            var card1 = selected1;
+            var card2 = selected2;
+
+            Destroy(dissolveInstance[0]);
+            
+            if (card1 != null) card1.DestroyCards();
+            if (card2 != null) card2.DestroyCards();
+            
+            dissolveInstance = null;
             Debug.Log("Dissolve efekti tamamlandı");
         }
-
-
     }
 }

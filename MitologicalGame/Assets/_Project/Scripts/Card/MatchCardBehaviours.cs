@@ -6,9 +6,7 @@ using _Project.Scripts.GameManagement;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
-using UnityEngine.EventSystems;
 using UnityEngine.Serialization;
-using UnityEngine.UI;
 using Random = UnityEngine.Random;
 
 namespace _Project.Scripts.Card
@@ -22,16 +20,18 @@ namespace _Project.Scripts.Card
         public CardType CardType => _cardType;
         private CardStatus _cardStatus;
         public CardStatus CardStatus => _cardStatus;
-        [SerializeField] private Vector3 _rotateAnimation;
+        
+        public TextMeshProUGUI cardText;
+        
+        [SerializeField] private Vector3 rotateAnimation;
         
         public List<MeshRenderer> cardMeshRenderers = new List<MeshRenderer>();
-        private int suspicionCount;
-        
+        private int _suspicionCount;
+        private bool _isInitialized = false;
         
         private void Start()
         {
-            Initialize();
-            suspicionCount = GameManager.Instance.suspicionCount;
+            _suspicionCount = GameManager.Instance.suspicionCount;
             cardContainer = FindObjectOfType<CardContainer>();
             if (cardContainer == null)
             {
@@ -40,51 +40,30 @@ namespace _Project.Scripts.Card
             }
             _list = cardContainer.cardPositions;
         }
+
+        public void SetCardType(CardType cardType)
+        {
+            _cardType = cardType;
+        }
         
         public void Initialize()
         {
-            _cardType = (CardType)Random.Range(0, Enum.GetValues(typeof(CardType)).Length);
+            if (_isInitialized) return;
+            
             _cardStatus = CardStatus.Closed;
             MeshRenderer[] meshRenderers = GetComponentsInChildren<MeshRenderer>();
             foreach (var mesh in meshRenderers)
             {
                 cardMeshRenderers.Add(mesh);
             }
+            cardText.text = _cardType.ToString();
             Debug.Log("Initialized Card with Type: " + _cardType + " " + name + " " + cardMeshRenderers.Count );
+            
+            _isInitialized = true; 
         }
-        //
-        // public void OnPointerDown(PointerEventData eventData)
-        // {
-        //     _index = _list.FindIndex(i => i.transform.position == transform.position);
-        //     
-        //     if (_index == -1)
-        //     {
-        //         Debug.LogWarning("Invalid index for GameObject: " + name);
-        //         return;
-        //     }
-        //     
-        //     Debug.Log("CardType: " + _cardType + " Index: " + _index + " Status: " + _cardStatus);
-        //     
-        //     if (_cardStatus == CardStatus.Closed)
-        //     {
-        //         _cardStatus = CardStatus.Opened;
-        //         GameManager.Instance.OnCardSelected(_cardType);
-        //     }
-        //     else
-        //     {
-        //         _cardStatus = CardStatus.Closed;
-        //         GameManager.Instance.OnCardDeselected(_cardType);
-        //     }
-        //     Debug.Log("CardType: " + _cardType + " Index: " + _index + " Status: " + _cardStatus);
-        //     
-        //     StartCoroutine(Timer());
-        //     // İsteğe bağlı, kartı temizlemek için kullanılabilir
-        // }
-     
-        private IEnumerator Timer()
+        
+        public void DestroyCards()
         {
-            //StartCoroutine(GameManager.Instance.PlayDissolveEffect(gameObject));
-            yield return new WaitForSeconds(3f);
             cardContainer.ClearCard(_index);
         }
 
@@ -102,7 +81,7 @@ namespace _Project.Scripts.Card
             {
                 _cardStatus = CardStatus.Opened;
                 GameManager.Instance.OnCardSelected(this);
-                transform.DORotate(_rotateAnimation, 1f);
+                transform.DORotate(rotateAnimation, 1f);
             }
             else
             {
@@ -113,7 +92,7 @@ namespace _Project.Scripts.Card
             Debug.Log("CardType: " + _cardType + " Index: " + _index + " Status: " + _cardStatus);
         }
     }
-    
+
     public enum CardStatus
     {
         Opened,
@@ -128,4 +107,5 @@ namespace _Project.Scripts.Card
         Joy,
         Sadness,
     }
+    
 }

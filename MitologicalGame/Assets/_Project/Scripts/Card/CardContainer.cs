@@ -1,8 +1,5 @@
-using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace _Project.Scripts.Card
 {
@@ -53,7 +50,5 @@ namespace _Project.Scripts.Card
                Debug.Log("No card to remove at position: " + cardPositions[index].position);
            }
        }
-
-       
     }
 }

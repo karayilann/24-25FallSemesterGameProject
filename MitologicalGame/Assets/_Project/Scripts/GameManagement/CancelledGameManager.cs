@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using _Project.Scripts.AI;
+using _Project.Scripts.Base___Interfaces;
 using _Project.Scripts.Card;
 using _Project.Scripts.Character;
 using UnityEngine.Serialization;
@@ -13,7 +14,7 @@ namespace _Project.Scripts.GameManagement
     {
         public static CancelledGameManager Instance { get; private set; }
 
-        public Player player;
+        public CharacterBase player;
         public AIPlayer ai;
         [SerializeField] private GameObject cardPrefab;
         [SerializeField] private List<CancelledCard> _aiDeck;

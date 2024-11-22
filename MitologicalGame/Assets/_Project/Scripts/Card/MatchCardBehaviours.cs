@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using _Project.Scripts.Base___Interfaces;
+using _Project.Scripts.CoreScripts;
 using _Project.Scripts.GameManagement;
 using DG.Tweening;
 using TMPro;
@@ -22,12 +23,13 @@ namespace _Project.Scripts.Card
         public CardStatus CardStatus => _cardStatus;
         
         public TextMeshProUGUI cardText;
-        
+        public DragAndDrop dragAndDrop;
         [SerializeField] private Vector3 rotateAnimation;
         
         public List<MeshRenderer> cardMeshRenderers = new List<MeshRenderer>();
         private int _suspicionCount;
         private bool _isInitialized = false;
+        
         
         private void Start()
         {
@@ -45,7 +47,12 @@ namespace _Project.Scripts.Card
         {
             _cardType = cardType;
         }
-        
+
+        private void Update()
+        {
+            Debug.Log(dragAndDrop.canDrag);
+        }
+
         public void Initialize()
         {
             if (_isInitialized) return;
@@ -82,6 +89,8 @@ namespace _Project.Scripts.Card
                 _cardStatus = CardStatus.Opened;
                 GameManager.Instance.OnCardSelected(this);
                 transform.DORotate(rotateAnimation, 1f);
+                StartCoroutine(WaitAnimation(1f));
+               
             }
             else
             {
@@ -91,6 +100,14 @@ namespace _Project.Scripts.Card
             
             Debug.Log("CardType: " + _cardType + " Index: " + _index + " Status: " + _cardStatus);
         }
+        
+        private IEnumerator WaitAnimation(float animationTime)
+        {
+            yield return new WaitForSeconds(animationTime);
+            dragAndDrop.canDrag = true;
+            Debug.Log("Can Drag: " + dragAndDrop.canDrag);
+        }
+        
     }
 
     public enum CardStatus

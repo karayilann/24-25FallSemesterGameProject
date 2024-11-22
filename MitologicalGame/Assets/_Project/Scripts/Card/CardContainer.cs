@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using _Project.Scripts.BaseAndInterfaces;
 using UnityEngine;
 
 namespace _Project.Scripts.Card
@@ -55,7 +56,7 @@ namespace _Project.Scripts.Card
                     card.name = "Card " + i;
                     card.transform.position = cardPositions[i].position;
                     
-                    var cardBehavior = card.GetComponent<MatchCardBehaviours>();
+                    var cardBehavior = card.GetComponent<CardBehaviours>();
                     if (cardBehavior != null)
                     {
                         cardBehavior.SetCardType(_requiredCardTypes[i]);

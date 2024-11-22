@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using _Project.Scripts.BaseAndInterfaces;
 using _Project.Scripts.Card;
 using _Project.Scripts.CoreScripts;
 using DG.Tweening;
@@ -22,8 +23,8 @@ namespace _Project.Scripts.GameManagement
         
         public List<MeshRenderer> cardMeshRenderers;
         
-        public MatchCardBehaviours selected1;
-        public MatchCardBehaviours selected2;
+        public CardBehaviours selected1;
+        public CardBehaviours selected2;
         
         private bool _isProcessingWin = false;
         private bool _isProcessingReset = false;
@@ -37,7 +38,7 @@ namespace _Project.Scripts.GameManagement
             _requiredCardTypes = new HashSet<CardType>(requiredCardTypesList);
         }
  
-        public void OnCardSelected(MatchCardBehaviours cardType)
+        public void OnCardSelected(CardBehaviours cardType)
         {
             if (_isProcessingWin || _isProcessingReset) return;
             
@@ -94,7 +95,7 @@ namespace _Project.Scripts.GameManagement
             _isProcessingReset = false; 
         }
 
-        public void OnCardDeselected(MatchCardBehaviours cardType)
+        public void OnCardDeselected(CardBehaviours cardType)
         {
             if (_isProcessingWin || _isProcessingReset) return;
             

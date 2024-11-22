@@ -1,18 +1,16 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using _Project.Scripts.Base___Interfaces;
+using _Project.Scripts.BaseAndInterfaces;
 using _Project.Scripts.CoreScripts;
 using _Project.Scripts.GameManagement;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
-using Random = UnityEngine.Random;
 
 namespace _Project.Scripts.Card
 {
-    public class MatchCardBehaviours : MonoBehaviour,IInteractable
+    public class CardBehaviours : MonoBehaviour,IInteractable
     {
         public CardContainer cardContainer;
         private List<Transform> _list;
@@ -109,20 +107,4 @@ namespace _Project.Scripts.Card
         }
         
     }
-
-    public enum CardStatus
-    {
-        Opened,
-        Closed,
-    }
-    
-    public enum CardType
-    {
-        Fear,
-        Love,
-        Hate,
-        Joy,
-        Sadness,
-    }
-    
 }

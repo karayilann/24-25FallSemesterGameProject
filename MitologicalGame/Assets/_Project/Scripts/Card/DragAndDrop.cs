@@ -1,7 +1,6 @@
-using System;
 using UnityEngine;
 
-namespace _Project.Scripts.CoreScripts
+namespace _Project.Scripts.Card
 {
     public class DragAndDrop : MonoBehaviour
     {

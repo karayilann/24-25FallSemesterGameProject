@@ -142,10 +142,7 @@ MonoBehaviour:
   cardText: {fileID: 618609816941132183}
   dragAndDrop: {fileID: 3665003711177132303}
   rotateAnimation: {x: -180, y: -90, z: 360}
-  cardMeshRenderers:
-  - {fileID: 8892231428200108855}
-  - {fileID: 4630958989107914458}
-  - {fileID: 7554811356834086290}
+  cardMeshRenderers: []
 --- !u!222 &5685779988416279332
 CanvasRenderer:
   m_ObjectHideFlags: 0

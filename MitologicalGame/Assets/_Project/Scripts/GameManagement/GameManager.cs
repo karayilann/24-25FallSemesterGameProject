@@ -69,24 +69,12 @@ namespace _Project.Scripts.GameManagement
             
             yield return new WaitForSeconds(1f);
             
-            if (selected1 != null)
-            {
-                selected1.transform.DORotate(_cardClosedRotation, 1f)
-                    .OnComplete(() => 
-                    {
-                        if(selected1 != null)
-                            selected1.transform.rotation = Quaternion.Euler(_cardClosedRotation);
-                    });
-            }
+            if(selected1 != null)
+                selected1.transform.rotation = Quaternion.Euler(_cardClosedRotation);
             
             if (selected2 != null)
             {
-                selected2.transform.DORotate(_cardClosedRotation, 1f)
-                    .OnComplete(() => 
-                    {
-                        if(selected2 != null)
-                            selected2.transform.rotation = Quaternion.Euler(_cardClosedRotation);
-                    });
+               selected2.transform.rotation = Quaternion.Euler(_cardClosedRotation);
             }
 
             yield return new WaitForSeconds(1f);

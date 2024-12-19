@@ -17,8 +17,6 @@ namespace _Project.Scripts.Card
         private int _index;
         private CardType _cardType;
         public CardType CardType => _cardType;
-        private CardStatus _cardStatus;
-        public CardStatus CardStatus => _cardStatus;
         
         public TextMeshProUGUI cardText;
         public DragAndDrop dragAndDrop;
@@ -39,6 +37,7 @@ namespace _Project.Scripts.Card
                 return;
             }
             _list = cardContainer.cardPositions;
+            dragAndDrop.canDrag = true;
         }
 
         public void SetCardType(CardType cardType)
@@ -46,64 +45,48 @@ namespace _Project.Scripts.Card
             _cardType = cardType;
         }
 
-        private void Update()
-        {
-            Debug.Log(dragAndDrop.canDrag);
-        }
-
         public void Initialize()
         {
             if (_isInitialized) return;
             
-            _cardStatus = CardStatus.Closed;
-            MeshRenderer[] meshRenderers = GetComponentsInChildren<MeshRenderer>();
-            foreach (var mesh in meshRenderers)
-            {
-                cardMeshRenderers.Add(mesh);
-            }
+            // MeshRenderer[] meshRenderers = GetComponentsInChildren<MeshRenderer>();
+            // foreach (var mesh in meshRenderers)
+            // {
+            //     cardMeshRenderers.Add(mesh);
+            // }
             cardText.text = _cardType.ToString();
-            Debug.Log("Initialized Card with Type: " + _cardType + " " + name + " " + cardMeshRenderers.Count );
-            
             _isInitialized = true; 
         }
         
+        public void CheckCard(CardBehaviours card)
+        {
+            if (card.CardType == this.CardType)
+            {
+                CorrectCard(card);
+            }
+        }
+
+        private void CorrectCard(CardBehaviours card)
+        {
+            card.transform.SetParent(transform);
+            card.transform.position = transform.position;
+            if (transform.childCount>4)
+            {
+                Debug.Log("2 lü eşleşme yapıldı");
+                var component = card.GetComponent<DragAndDrop>();
+                component.isProccessed = true;
+                component.canDrag = true;
+            }
+        }
+  
         public void DestroyCards()
         {
-            cardContainer.ClearCard(_index);
+            //cardContainer.ClearCard(_index);
         }
 
         public void Interact()
         {
-            _index = _list.FindIndex(i => i.transform.position == transform.position);
             
-            if (_index == -1)
-            {
-                Debug.LogWarning("Invalid index for GameObject: " + name);
-                return;
-            }
-
-            if (_cardStatus == CardStatus.Closed)
-            {
-                _cardStatus = CardStatus.Opened;
-                GameManager.Instance.OnCardSelected(this);
-                transform.DORotate(rotateAnimation, 1f);
-                StartCoroutine(WaitAnimation(1f));
-               
-            }
-            else
-            {
-                _cardStatus = CardStatus.Closed;
-                GameManager.Instance.OnCardDeselected(this);
-            }
-            
-            Debug.Log("CardType: " + _cardType + " Index: " + _index + " Status: " + _cardStatus);
-        }
-        
-        private IEnumerator WaitAnimation(float animationTime)
-        {
-            yield return new WaitForSeconds(animationTime);
-            dragAndDrop.canDrag = true;
-            Debug.Log("Can Drag: " + dragAndDrop.canDrag);
         }
         
     }

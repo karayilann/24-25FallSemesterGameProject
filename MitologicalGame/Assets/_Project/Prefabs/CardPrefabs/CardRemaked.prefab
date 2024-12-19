@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 7554811356834086290}
   m_Layer: 0
   m_Name: Icon
-  m_TagString: Untagged
+  m_TagString: Interactable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -98,7 +98,7 @@ GameObject:
   - component: {fileID: 3665003711177132303}
   m_Layer: 0
   m_Name: CardRemaked
-  m_TagString: Untagged
+  m_TagString: Interactable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -110,17 +110,17 @@ RectTransform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3214920459486077198}
-  m_LocalRotation: {x: -0.7071068, y: 0, z: 0.7071068, w: 0}
+  m_LocalRotation: {x: -0.7071068, y: 0, z: -0.7071068, w: 0}
   m_LocalPosition: {x: 0, y: 0, z: -5}
   m_LocalScale: {x: 7, y: 7, z: 7}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1597966609732346116}
-  - {fileID: 5174191959281366252}
   - {fileID: 8924284154095755184}
   - {fileID: 5599152030112873110}
+  - {fileID: 5174191959281366252}
   m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: -180, y: 90, z: 0}
+  m_LocalEulerAnglesHint: {x: -180, y: -90, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
   m_AnchoredPosition: {x: 0, y: 0}
@@ -186,6 +186,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   offset: {x: 0.39, y: 2.66, z: 0}
   canDrag: 0
+  dropOffset: {x: 1, y: 1, z: 0}
+  cardBehaviours: {fileID: 4057967496413421268}
 --- !u!1 &3577597394772775344
 GameObject:
   m_ObjectHideFlags: 0
@@ -199,7 +201,7 @@ GameObject:
   - component: {fileID: 618609816941132183}
   m_Layer: 0
   m_Name: Text (TMP)
-  m_TagString: Untagged
+  m_TagString: Interactable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -331,9 +333,10 @@ GameObject:
   - component: {fileID: 5174191959281366252}
   - component: {fileID: 2190146726187222273}
   - component: {fileID: 4630958989107914458}
+  - component: {fileID: 6433372609866321286}
   m_Layer: 0
   m_Name: CardMain
-  m_TagString: Untagged
+  m_TagString: Interactable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -404,6 +407,28 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &6433372609866321286
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7860718408920869227}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 0
+  serializedVersion: 5
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 5320912767985449931, guid: 99fb198ba62840a449362e7cf2e28b1c, type: 3}
 --- !u!1 &7987827844318395934
 GameObject:
   m_ObjectHideFlags: 0
@@ -417,7 +442,7 @@ GameObject:
   - component: {fileID: 8892231428200108855}
   m_Layer: 0
   m_Name: NameZone
-  m_TagString: Untagged
+  m_TagString: Interactable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

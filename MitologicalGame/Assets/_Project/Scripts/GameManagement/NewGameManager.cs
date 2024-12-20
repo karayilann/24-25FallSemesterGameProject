@@ -2,7 +2,6 @@ using System.Collections.Generic;
 using _Project.Scripts.BaseAndInterfaces;
 using _Project.Scripts.Card;
 using _Project.Scripts.CoreScripts;
-using DG.Tweening;
 using TMPro;
 using UnityEngine;
 
@@ -24,11 +23,11 @@ namespace _Project.Scripts.GameManagement
                 isDiscarded = false;
             }else
             {
-                popUpNotification.transform.DOLocalMoveY(186.1807f, .5f)
-                    .OnStart(() => popUpNotificationText.text = "Please discard the card first!").OnComplete(() =>
-                    {
-                        popUpNotification.transform.DOLocalMoveY(186.1807f, .5f);
-                    });
+                // popUpNotification.transform.DOLocalMoveY(186.1807f, .5f)
+                //     .OnStart(() => popUpNotificationText.text = "Please discard the card first!").OnComplete(() =>
+                //     {
+                //         popUpNotification.transform.DOLocalMoveY(186.1807f, .5f);
+                //     });
             }
         }
     }

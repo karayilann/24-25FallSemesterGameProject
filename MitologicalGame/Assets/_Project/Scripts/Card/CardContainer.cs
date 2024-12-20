@@ -10,7 +10,7 @@ namespace _Project.Scripts.Card
     public class CardContainer : MonoBehaviour
     {
         [SerializeField] public List<Transform> cardPositions;
-        public Dictionary<int, bool> _cardStatus; // Card position and useable
+        public Dictionary<int, bool> _cardStatus;
         public GameObject cardPrefab;
         public List<CardType> _requiredCardTypes;
         private int _totalCardCount = 5;
@@ -51,34 +51,27 @@ namespace _Project.Scripts.Card
 
         public void OrderCards()
         {
-            if(_totalCardCount - _requiredCardCount >0)
+            for (int i = 0; i < _cardStatus.Count; i++)
             {
-                for (int i = 0; i < _cardStatus.Count; i++)
+                if (_cardStatus[i] && i < _requiredCardTypes.Count)
                 {
-                    if (_cardStatus[i] && i < _requiredCardTypes.Count)
+                    GameObject card = Instantiate(cardPrefab, cardPositions[i], true);
+                    card.name = "Card " + i;
+                    card.transform.position = cardPositions[i].position;
+
+                    var cardBehavior = card.GetComponent<CardBehaviours>();
+                    if (cardBehavior != null)
                     {
-                        GameObject card = Instantiate(cardPrefab, cardPositions[i], true);
-                        card.name = "Card " + i;
-                        card.transform.position = cardPositions[i].position;
-
-                        var cardBehavior = card.GetComponent<CardBehaviours>();
-                        if (cardBehavior != null)
-                        {
-                            cardBehavior.SetCardType(_requiredCardTypes[i]);
-                            cardBehavior.Initialize();
-                        }
-
-                        _cardStatus[i] = false;
-                        _totalCardCount--;
+                        cardBehavior.SetCardType(_requiredCardTypes[i]);
+                        cardBehavior.Initialize();
                     }
+
+                    _cardStatus[i] = false;
+                    //_totalCardCount--;
                 }
-                _requiredCardCount = 0;
             }
-            else
-            {
-                AddCardFromDiscard();
-                OrderCards();
-            }
+
+            //_requiredCardCount = 0;
         }
 
         private void AddCardFromDiscard()

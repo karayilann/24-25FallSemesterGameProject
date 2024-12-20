@@ -68,7 +68,7 @@ public class CardBehaviours : MonoBehaviour, IInteractable
         card.transform.position = targetPos;
         
         // Offset uygula
-        Vector3 stackOffset = new Vector3(0, 0, -0.1f * targetParent.childCount);
+        Vector3 stackOffset = new Vector3(0.5f * targetParent.childCount, 0.5f * targetParent.childCount, 0);
         card.cardTransform.localPosition = stackOffset;
 
         // Kart durumunu güncelle
@@ -76,6 +76,7 @@ public class CardBehaviours : MonoBehaviour, IInteractable
         card.dragAndDrop.canDrag = false;
         card.cardContainer._cardStatus[card._index] = true;
         
+        _selectedCard = null;
         Debug.Log($"Eşleşme yapıldı - Kart: {card.CardType}, Parent: {targetParent.name}");
         
         // 3'lü eşleşme kontrolü

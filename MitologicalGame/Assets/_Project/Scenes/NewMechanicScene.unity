@@ -700,8 +700,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 3.7248342, y: 4.7587385, z: 5.524652}
-  m_Center: {x: 1.3624232, y: 0.1146262, z: -0.0085020065}
+  m_Size: {x: 0.8274423, y: 4.7587385, z: 5.524652}
+  m_Center: {x: -0.08626467, y: 0.1146262, z: -0.0085021425}
 --- !u!222 &238184424
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -1665,7 +1665,7 @@ AudioListener:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1135801127}
-  m_Enabled: 1
+  m_Enabled: 0
 --- !u!20 &1135801129
 Camera:
   m_ObjectHideFlags: 0

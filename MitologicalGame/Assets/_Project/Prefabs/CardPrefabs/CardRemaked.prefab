@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 8924284154095755184}
   - component: {fileID: 2204714505313254047}
   - component: {fileID: 7554811356834086290}
+  - component: {fileID: 7788383651593240398}
   m_Layer: 0
   m_Name: Icon
   m_TagString: Interactable
@@ -83,6 +84,28 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &7788383651593240398
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1316879744791992226}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -3919898034670878181, guid: 99fb198ba62840a449362e7cf2e28b1c, type: 3}
 --- !u!1 &3214920459486077198
 GameObject:
   m_ObjectHideFlags: 0
@@ -115,10 +138,10 @@ RectTransform:
   m_LocalScale: {x: 7, y: 7, z: 7}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 5174191959281366252}
   - {fileID: 1597966609732346116}
   - {fileID: 8924284154095755184}
   - {fileID: 5599152030112873110}
-  - {fileID: 5174191959281366252}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: -180, y: -90, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
@@ -139,10 +162,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cardContainer: {fileID: 8302410459974790595, guid: 7c34c3dbd6a146a4ab01e5dfa8376e82, type: 3}
+  cardTransform: {fileID: 1800778907810410157}
   cardText: {fileID: 618609816941132183}
   dragAndDrop: {fileID: 3665003711177132303}
-  rotateAnimation: {x: -180, y: -90, z: 360}
-  cardMeshRenderers: []
 --- !u!222 &5685779988416279332
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -184,8 +206,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dac61df31de03f749ab9077bf6e1c6f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  offset: {x: 0.39, y: 2.66, z: 0}
   canDrag: 0
+  isProccessed: 0
   dropOffset: {x: 1, y: 1, z: 0}
   cardBehaviours: {fileID: 4057967496413421268}
 --- !u!1 &3577597394772775344
@@ -334,6 +356,7 @@ GameObject:
   - component: {fileID: 2190146726187222273}
   - component: {fileID: 4630958989107914458}
   - component: {fileID: 6433372609866321286}
+  - component: {fileID: 8230391563979970027}
   m_Layer: 0
   m_Name: CardMain
   m_TagString: Interactable
@@ -424,9 +447,31 @@ MeshCollider:
   m_LayerOverridePriority: 0
   m_IsTrigger: 0
   m_ProvidesContacts: 0
-  m_Enabled: 0
+  m_Enabled: 1
   serializedVersion: 5
   m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 5320912767985449931, guid: 99fb198ba62840a449362e7cf2e28b1c, type: 3}
+--- !u!64 &8230391563979970027
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7860718408920869227}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 0
   m_CookingOptions: 30
   m_Mesh: {fileID: 5320912767985449931, guid: 99fb198ba62840a449362e7cf2e28b1c, type: 3}
 --- !u!1 &7987827844318395934
@@ -440,6 +485,7 @@ GameObject:
   - component: {fileID: 1597966609732346116}
   - component: {fileID: 8455488202185445250}
   - component: {fileID: 8892231428200108855}
+  - component: {fileID: 8440520068715121620}
   m_Layer: 0
   m_Name: NameZone
   m_TagString: Interactable
@@ -512,3 +558,25 @@ MeshRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_AdditionalVertexStreams: {fileID: 0}
+--- !u!64 &8440520068715121620
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7987827844318395934}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 0
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 5
+  m_Convex: 1
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 2641517884868452748, guid: 99fb198ba62840a449362e7cf2e28b1c, type: 3}

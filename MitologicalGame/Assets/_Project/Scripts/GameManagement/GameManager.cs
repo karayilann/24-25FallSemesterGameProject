@@ -106,8 +106,8 @@ namespace _Project.Scripts.GameManagement
                     .OnStart(() => popUpNotificationText.text = "Kazandın!")
                     .OnComplete(() =>
                     {
-                        StartCoroutine(PlayDissolveEffect(selected1.cardMeshRenderers));
-                        StartCoroutine(PlayDissolveEffect(selected2.cardMeshRenderers));
+                        //StartCoroutine(PlayDissolveEffect(selected1.cardMeshRenderers));
+                        //StartCoroutine(PlayDissolveEffect(selected2.cardMeshRenderers));
                     
                         popUpNotification.transform.DOLocalMoveY(252.2807f, .5f)
                             .SetDelay(1f)

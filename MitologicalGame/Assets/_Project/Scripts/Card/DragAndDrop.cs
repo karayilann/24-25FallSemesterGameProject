@@ -34,8 +34,16 @@ namespace _Project.Scripts.Card
         private void OnMouseDrag()
         {
             if (!canDrag) return;
+
+            // Kartı fare ile sürükleme işlemi
             transform.position = _mainCamera.ScreenToWorldPoint(Input.mousePosition - _mousePosition);
+
+            // Işını görselleştirme
+            var direction = (_mainCamera.transform.position - transform.position).normalized;
+            var rayOrigin = transform.position - direction * 100; // Başlangıç noktası
+            Debug.DrawRay(rayOrigin, direction * 1000, Color.green, 0.1f); // Işını sahnede görselleştir
         }
+
     
         private void OnMouseUp()
         {

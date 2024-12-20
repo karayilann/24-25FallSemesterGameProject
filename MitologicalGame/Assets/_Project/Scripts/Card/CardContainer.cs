@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using _Project.Scripts.BaseAndInterfaces;
 using _Project.Scripts.GameManagement;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace _Project.Scripts.Card
 {
@@ -12,48 +12,73 @@ namespace _Project.Scripts.Card
         [SerializeField] public List<Transform> cardPositions;
         public Dictionary<int, bool> _cardStatus;
         public GameObject cardPrefab;
-        public List<CardType> _requiredCardTypes;
-        private int _totalCardCount = 5;
-        private int _requiredCardCount = 0;
+        private List<CardType> _requiredCardTypes;
+        [FormerlySerializedAs("_availableCardTypes")] public List<CardType> availableCardTypes;
 
         private void Start()
         {
-            _cardStatus = new Dictionary<int, bool>();
-            _requiredCardTypes = new List<CardType>();
-            
-            if (cardPositions.Count == 0) return;
-            
-            for (int i = 0; i < cardPositions.Count; i++)
-            {
-                _cardStatus.Add(i, true);
-            }
-
+            InitializeContainer();
             PrepareRequiredCards();
             OrderCards();
         }
 
-        private void PrepareRequiredCards()
+        private void InitializeContainer()
         {
-            foreach (CardType type in Enum.GetValues(typeof(CardType)))
+            _cardStatus = new Dictionary<int, bool>();
+            _requiredCardTypes = new List<CardType>();
+            availableCardTypes = new List<CardType>();
+        
+            if (cardPositions.Count == 0) return;
+        
+            for (int i = 0; i < cardPositions.Count; i++)
             {
-                _requiredCardTypes.Add(type);
+                _cardStatus.Add(i, true);
+            }
+        }
+
+        public void CheckForEmptyPositions()
+        {
+            bool hasEmptyPositions = false;
+            int emptyCount = 0;
+        
+            for (int i = 0; i < cardPositions.Count; i++)
+            {
+                bool isEmpty = cardPositions[i].childCount == 0;
+            
+                if (isEmpty && !_cardStatus[i])
+                {
+                    _cardStatus[i] = true;
+                    hasEmptyPositions = true;
+                    emptyCount++;
+                }
+                else if (!isEmpty && _cardStatus[i])
+                {
+                    _cardStatus[i] = false;
+                }
             }
 
-            int remainingPositions = cardPositions.Count - _requiredCardTypes.Count;
-            for (int i = 0; i < remainingPositions; i++)
+            if (hasEmptyPositions)
             {
-                CardType randomType = (CardType)UnityEngine.Random.Range(0, Enum.GetValues(typeof(CardType)).Length);
-                _requiredCardTypes.Add(randomType);
+                if (availableCardTypes.Count < emptyCount)
+                {
+                    PrepareRequiredCards();
+                }
+                else
+                {
+                    ShuffleCards(availableCardTypes);
+                }
+            
+                OrderCards();
             }
-
-            _requiredCardTypes = _requiredCardTypes.OrderBy(x => UnityEngine.Random.value).ToList();
         }
 
         public void OrderCards()
         {
+            int currentCardIndex = 0;
+        
             for (int i = 0; i < _cardStatus.Count; i++)
             {
-                if (_cardStatus[i] && i < _requiredCardTypes.Count)
+                if (_cardStatus[i] && cardPositions[i].childCount == 0 && currentCardIndex < availableCardTypes.Count)
                 {
                     GameObject card = Instantiate(cardPrefab, cardPositions[i], true);
                     card.name = "Card " + i;
@@ -62,45 +87,80 @@ namespace _Project.Scripts.Card
                     var cardBehavior = card.GetComponent<CardBehaviours>();
                     if (cardBehavior != null)
                     {
-                        cardBehavior.SetCardType(_requiredCardTypes[i]);
+                        cardBehavior.SetCardType(availableCardTypes[currentCardIndex]);
                         cardBehavior.Initialize();
                     }
 
                     _cardStatus[i] = false;
-                    //_totalCardCount--;
+                    currentCardIndex++;
                 }
             }
-
-            //_requiredCardCount = 0;
+        
+            if (currentCardIndex > 0)
+            {
+                availableCardTypes.RemoveRange(0, currentCardIndex);
+            }
+        
+            if (availableCardTypes.Count == 0)
+            {
+                AddCardFromDiscard();
+            }
         }
 
+        private void PrepareRequiredCards()
+        {
+            _requiredCardTypes.Clear();
+            availableCardTypes.Clear();
+
+            var cardTypes = Enum.GetValues(typeof(CardType));
+        
+            foreach (CardType type in cardTypes)
+            {
+                _requiredCardTypes.Add(type);
+            }
+
+            int remainingPositions = cardPositions.Count - _requiredCardTypes.Count;
+            for (int i = 0; i < remainingPositions; i++)
+            {
+                CardType randomType = (CardType)UnityEngine.Random.Range(0, cardTypes.Length);
+                _requiredCardTypes.Add(randomType);
+            }
+
+            ShuffleCards(_requiredCardTypes);
+            availableCardTypes.AddRange(_requiredCardTypes);
+        }
+
+        private void ShuffleCards(List<CardType> cards)
+        {
+            // Fisher-Yates shuffle algoritması
+            int n = cards.Count;
+            while (n > 1)
+            {
+                n--;
+                int k = UnityEngine.Random.Range(0, n + 1);
+                (cards[k], cards[n]) = (cards[n], cards[k]);
+            }
+        }
         private void AddCardFromDiscard()
         {
             Debug.LogWarning("All cards are used. Adding cards from discarded cards.");
-            _requiredCardTypes.Clear();
             var discardedCards = NewGameManager.Instance.discardedCards;
-            _totalCardCount = discardedCards.Count;
         
-            // ToList() kullanımını kaldır ve doğrudan listeyi işle
-            for (int i = discardedCards.Count - 1; i >= 0; i--)
+            if (discardedCards.Count > 0)
             {
-                _requiredCardTypes.Add(discardedCards[i]);
-                discardedCards.RemoveAt(i);
-            }
-        }
-
-        public void CheckForEmptyPositions()
-        {
-            for (int i = 0; i < cardPositions.Count; i++)
-            {
-                if (cardPositions[i].childCount == 0)
+                availableCardTypes.Clear();
+                for (int i = discardedCards.Count - 1; i >= 0; i--)
                 {
-                    _cardStatus[i] = true;
-                    _requiredCardCount++;
+                    availableCardTypes.Add(discardedCards[i]);
+                    discardedCards.RemoveAt(i);
                 }
+            
+                ShuffleCards(availableCardTypes);
             }
-            OrderCards();
+            else
+            {
+                PrepareRequiredCards();
+            }
         }
-        
     }
 }

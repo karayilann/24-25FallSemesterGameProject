@@ -59,19 +59,15 @@ public class CardBehaviours : MonoBehaviour, IInteractable
     {
         if (!card.dragAndDrop.canDrag) return; // Çift işlemi önle
         
-        // Kartın orijinal pozisyonunu kaydet
         Vector3 targetPos = transform.position;
         Transform targetParent = transform.parent;
         
-        // Kartı yeni parent'a ata ve pozisyonla
         card.transform.SetParent(targetParent);
         card.transform.position = targetPos;
         
-        // Offset uygula
-        Vector3 stackOffset = new Vector3(0.5f * targetParent.childCount, 0.5f * targetParent.childCount, 0);
+        Vector3 stackOffset = new Vector3(2f * targetParent.childCount, 2f * targetParent.childCount, 0);
         card.cardTransform.localPosition = stackOffset;
 
-        // Kart durumunu güncelle
         card.dragAndDrop.isProccessed = true;
         card.dragAndDrop.canDrag = false;
         card.cardContainer._cardStatus[card._index] = true;

@@ -1,4 +1,3 @@
-using System;
 using _Project.Scripts.GameManagement;
 using UnityEngine;
 
@@ -14,6 +13,7 @@ namespace _Project.Scripts.Card
         public Vector3 dropOffset;
         public CardBehaviours cardBehaviours;
         private Camera _mainCamera;
+        public Collider cardCollider;
         
         private void Awake()
         {
@@ -35,42 +35,55 @@ namespace _Project.Scripts.Card
         {
             if (!canDrag) return;
 
-            // Kartı fare ile sürükleme işlemi
             transform.position = _mainCamera.ScreenToWorldPoint(Input.mousePosition - _mousePosition);
 
-            // Işını görselleştirme
             var direction = (_mainCamera.transform.position - transform.position).normalized;
-            var rayOrigin = transform.position - direction * 100; // Başlangıç noktası
-            Debug.DrawRay(rayOrigin, direction * 1000, Color.green, 0.1f); // Işını sahnede görselleştir
+            var rayOrigin = (transform.position - direction * 100);
+            Debug.DrawRay(rayOrigin, direction * 1000, Color.green, 0.1f);
         }
-
-    
+        
         private void OnMouseUp()
         {
-            if (!canDrag) return; // Sürüklenemez kartları kontrol etme
+            if (!canDrag) return;
             CheckForDropZone();
         
-            if (!isProccessed && !_isDropped) // Eğer bir işlem yapılmadıysa başlangıç pozisyonuna dön
+            if (!isProccessed && !_isDropped)
             {
                 transform.position = _initialPosition;
             }
         }
 
-        void CheckForDropZone()
+        private void CheckForDropZone()
         {
             var direction = (_mainCamera.transform.position - transform.position).normalized;
             Ray ray = new Ray(transform.position - direction * 100, direction);
-            RaycastHit hit;
-        
-            if (Physics.Raycast(ray, out hit, Mathf.Infinity))
+            RaycastHit[] hits = Physics.RaycastAll(ray, Mathf.Infinity);
+
+            if (hits.Length > 0)
             {
-                ProcessHit(hit);
+                bool hitProcessed = false;
+                foreach (var hit in hits)
+                {
+                    if (hit.collider != null)
+                    {
+                        ProcessHit(hit);
+                        hitProcessed = true;
+                        break; // İlk geçerli "hit" işlendiğinde döngüden çık
+                    }
+                }
+
+                if (!hitProcessed)
+                {
+                    transform.position = _initialPosition;
+                }
             }
             else
             {
-                transform.position = _initialPosition; // Hiçbir şey bulunamadığında başlangıç pozisyonuna dön
+                transform.position = _initialPosition;
             }
         }
+
+
 
         private void ProcessHit(RaycastHit hit)
         {
@@ -93,6 +106,7 @@ namespace _Project.Scripts.Card
             }
         }
 
+        // Buraya atılan kartların yeniden kullanılması için fixle
         private void HandleDropZone(GameObject zone)
         {
             transform.SetParent(zone.transform);
@@ -105,7 +119,8 @@ namespace _Project.Scripts.Card
         {
             transform.SetParent(zone.transform);
             transform.position = zone.transform.position + dropOffset * 2;
-            NewGameManager.Instance.discardedCards.Add(cardBehaviours.CardType);
+            NewGameManager.Instance.discardedCards.Add(cardBehaviours);
+            cardCollider.enabled = false;
             NewGameManager.Instance.isDiscarded = true;
             isProccessed = true;
             canDrag = false;

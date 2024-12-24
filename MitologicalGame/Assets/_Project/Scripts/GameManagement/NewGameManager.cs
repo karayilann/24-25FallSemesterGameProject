@@ -11,7 +11,7 @@ namespace _Project.Scripts.GameManagement
     {   
         public GameObject popUpNotification;
         public TextMeshProUGUI popUpNotificationText;
-        public List<CardType> discardedCards;
+        public List<CardBehaviours> discardedCards;
         public bool isDiscarded = false;
         public CardContainer cardContainer;
         

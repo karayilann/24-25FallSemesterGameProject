@@ -2694,27 +2694,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!65 &1339571984169975335
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3214920458428686582}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 0
-  serializedVersion: 3
-  m_Size: {x: 1, y: 4.7587385, z: 3.2518551}
-  m_Center: {x: -4.059225e-17, y: 0.11462613, z: -0.0029077528}
 --- !u!4 &1597966608675021052
 Transform:
   m_ObjectHideFlags: 0
@@ -2786,10 +2765,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1800778908866752341}
-  - component: {fileID: 4057967497469959980}
   - component: {fileID: 5685779987359675100}
-  - component: {fileID: 1339571984169975335}
-  - component: {fileID: 3665003712234457335}
   m_Layer: 0
   m_Name: FullDeste
   m_TagString: Interactable
@@ -2830,22 +2806,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &3665003712234457335
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3214920458428686582}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dac61df31de03f749ab9077bf6e1c6f9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  canDrag: 0
-  isProccessed: 0
-  dropOffset: {x: 3, y: 3, z: 0}
-  cardBehaviours: {fileID: 4057967497469959980}
 --- !u!65 &3794809009415713984
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -2889,23 +2849,7 @@ MonoBehaviour:
   - {fileID: 815048988}
   - {fileID: 773290570}
   cardPrefab: {fileID: 3214920459486077198, guid: 49c951ac3a955f54e9329fecc6e620b5, type: 3}
-  _requiredCardTypes: 
---- !u!114 &4057967497469959980
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3214920458428686582}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 387dee2335858344f86ed36c0f17a84d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  cardContainer: {fileID: 8302410459974790595, guid: 7c34c3dbd6a146a4ab01e5dfa8376e82, type: 3}
-  cardTransform: {fileID: 0}
-  cardText: {fileID: 618609815850252399}
-  dragAndDrop: {fileID: 3665003712234457335}
+  availableCardTypes: 
 --- !u!33 &4060617356693311006
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -3351,7 +3295,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   popUpNotification: {fileID: 984353150}
   popUpNotificationText: {fileID: 165341940}
-  discardedCards: 
+  discardedCards: []
   isDiscarded: 0
   cardContainer: {fileID: 4007803370760898698}
 --- !u!23 &7554811355742878826

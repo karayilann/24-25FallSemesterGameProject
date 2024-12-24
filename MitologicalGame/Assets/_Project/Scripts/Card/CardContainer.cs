@@ -15,21 +15,21 @@ namespace _Project.Scripts.Card
         private List<CardType> _requiredCardTypes;
         [FormerlySerializedAs("_availableCardTypes")] public List<CardType> availableCardTypes;
 
+        private const int TotalCardCount = 25; // Toplam kart sayısı (5 kart türünden her biri 5 adet)
+
         private void Start()
         {
             InitializeContainer();
-            PrepareRequiredCards();
+            PrepareCardDeck(); // Tüm kartlardan 5 tane olacak şekilde hazırlık
             OrderCards();
         }
 
         private void InitializeContainer()
         {
             _cardStatus = new Dictionary<int, bool>();
-            _requiredCardTypes = new List<CardType>();
-            availableCardTypes = new List<CardType>();
-        
+
             if (cardPositions.Count == 0) return;
-        
+
             for (int i = 0; i < cardPositions.Count; i++)
             {
                 _cardStatus.Add(i, true);
@@ -40,11 +40,11 @@ namespace _Project.Scripts.Card
         {
             bool hasEmptyPositions = false;
             int emptyCount = 0;
-        
+
             for (int i = 0; i < cardPositions.Count; i++)
             {
                 bool isEmpty = cardPositions[i].childCount == 0;
-            
+
                 if (isEmpty && !_cardStatus[i])
                 {
                     _cardStatus[i] = true;
@@ -59,15 +59,7 @@ namespace _Project.Scripts.Card
 
             if (hasEmptyPositions)
             {
-                if (availableCardTypes.Count < emptyCount)
-                {
-                    PrepareRequiredCards();
-                }
-                else
-                {
-                    ShuffleCards(availableCardTypes);
-                }
-            
+                ShuffleCards(availableCardTypes); // Desteden rastgele kart seçimi için karıştırma
                 OrderCards();
             }
         }
@@ -75,7 +67,7 @@ namespace _Project.Scripts.Card
         public void OrderCards()
         {
             int currentCardIndex = 0;
-        
+
             for (int i = 0; i < _cardStatus.Count; i++)
             {
                 if (_cardStatus[i] && cardPositions[i].childCount == 0 && currentCardIndex < availableCardTypes.Count)
@@ -95,71 +87,71 @@ namespace _Project.Scripts.Card
                     currentCardIndex++;
                 }
             }
-        
+
             if (currentCardIndex > 0)
             {
                 availableCardTypes.RemoveRange(0, currentCardIndex);
             }
-        
+
             if (availableCardTypes.Count == 0)
             {
-                AddCardFromDiscard();
+                Debug.LogWarning("All cards have been used. No more cards in the deck.");
+                AddCardFromDiscardPile();
             }
         }
 
-        private void PrepareRequiredCards()
+        private void AddCardFromDiscardPile()
         {
-            _requiredCardTypes.Clear();
-            availableCardTypes.Clear();
+            var newGameManager = NewGameManager.Instance;
+            if (newGameManager.discardedCards.Count == 0)
+            {
+                Debug.LogWarning("No discarded cards to add.");
+                return;
+            }
+
+            foreach (var card in newGameManager.discardedCards)
+            {
+                card.dragAndDrop.cardCollider.enabled = true;
+                card.dragAndDrop.canDrag = true;
+                card.dragAndDrop.isProccessed = false;
+                availableCardTypes.Add(card.CardType);
+            }
+            
+            ShuffleCards(availableCardTypes);
+            if(newGameManager.discardedCards.Count != 0) return;
+            NewGameManager.Instance.discardedCards.Clear();
+        }
+
+        private void PrepareCardDeck()
+        {
+            availableCardTypes = new List<CardType>();
 
             var cardTypes = Enum.GetValues(typeof(CardType));
-        
+
             foreach (CardType type in cardTypes)
             {
-                _requiredCardTypes.Add(type);
+                for (int i = 0; i < 5; i++)
+                {
+                    availableCardTypes.Add(type);
+                }
             }
 
-            int remainingPositions = cardPositions.Count - _requiredCardTypes.Count;
-            for (int i = 0; i < remainingPositions; i++)
+            if (availableCardTypes.Count != TotalCardCount)
             {
-                CardType randomType = (CardType)UnityEngine.Random.Range(0, cardTypes.Length);
-                _requiredCardTypes.Add(randomType);
+                Debug.LogError("Card deck setup error: Incorrect total card count.");
             }
 
-            ShuffleCards(_requiredCardTypes);
-            availableCardTypes.AddRange(_requiredCardTypes);
+            ShuffleCards(availableCardTypes);
         }
 
         private void ShuffleCards(List<CardType> cards)
         {
-            // Fisher-Yates shuffle algoritması
             int n = cards.Count;
             while (n > 1)
             {
                 n--;
                 int k = UnityEngine.Random.Range(0, n + 1);
                 (cards[k], cards[n]) = (cards[n], cards[k]);
-            }
-        }
-        private void AddCardFromDiscard()
-        {
-            Debug.LogWarning("All cards are used. Adding cards from discarded cards.");
-            var discardedCards = NewGameManager.Instance.discardedCards;
-        
-            if (discardedCards.Count > 0)
-            {
-                availableCardTypes.Clear();
-                for (int i = discardedCards.Count - 1; i >= 0; i--)
-                {
-                    availableCardTypes.Add(discardedCards[i]);
-                    discardedCards.RemoveAt(i);
-                }
-            
-                ShuffleCards(availableCardTypes);
-            }
-            else
-            {
-                PrepareRequiredCards();
             }
         }
     }

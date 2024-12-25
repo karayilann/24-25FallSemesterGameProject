@@ -179,7 +179,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u015E\xFCphe Puan\u0131 : 2"
+  m_text: "\u015E\xFCphe Puan\u0131 : 0"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -2398,7 +2398,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\xD6ng\xF6r\xFC Puan\u0131 : 5"
+  m_text: "\xD6ng\xF6r\xFC Puan\u0131 : 0"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -3295,9 +3295,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   popUpNotification: {fileID: 984353150}
   popUpNotificationText: {fileID: 165341940}
+  foresightCountText: {fileID: 1834940086}
+  suspicionCountText: {fileID: 5718343}
   discardedCards: []
   isDiscarded: 0
   cardContainer: {fileID: 4007803370760898698}
+  requiredCardTypes: 000000000100000002000000
+  foresightCount: 0
+  suspicionCount: 0
 --- !u!23 &7554811355742878826
 MeshRenderer:
   m_ObjectHideFlags: 0

@@ -4,6 +4,7 @@ using _Project.Scripts.Card;
 using _Project.Scripts.CoreScripts;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace _Project.Scripts.GameManagement
 {
@@ -11,10 +12,36 @@ namespace _Project.Scripts.GameManagement
     {   
         public GameObject popUpNotification;
         public TextMeshProUGUI popUpNotificationText;
+        public TextMeshProUGUI foresightCountText;
+        public TextMeshProUGUI suspicionCountText;
         public List<CardBehaviours> discardedCards;
         public bool isDiscarded = false;
         public CardContainer cardContainer;
+        public List<CardType> requiredCardTypes;
         
+        [SerializeField] private int foresightCount;
+        [SerializeField] private int suspicionCount;
+
+        public int ForesightCount
+        {
+            get => foresightCount;
+            private set
+            {
+                foresightCount = value;
+                foresightCountText.text = "Öngörü Puanı: " + foresightCount.ToString();
+            }
+        }
+
+        public int SuspicionCount
+        {
+            get => suspicionCount; 
+            set
+            {
+                suspicionCount = value;
+                suspicionCountText.text = "Şüphe Puanı: " + suspicionCount.ToString();
+            }
+        }
+
         public void NextRound()
         {
             if (isDiscarded)
@@ -30,5 +57,27 @@ namespace _Project.Scripts.GameManagement
                 //     });
             }
         }
+        
+        public bool CheckForCorrectCardType(CardType cardType)
+        {
+            if (requiredCardTypes.Contains(cardType))
+            {
+                Debug.Log("İstenilen kart tipi doğru");
+                return true;
+            }
+            Debug.Log("İstenilen kart tipi yanlış");
+            return false;
+        }
+        
+        public void ChangeForesightCount(int amount)
+        {
+            ForesightCount += amount;
+        }
+        
+        public void ChangeSuspicionCount(int amount)
+        {
+            SuspicionCount += amount;
+        }
+        
     }
 }

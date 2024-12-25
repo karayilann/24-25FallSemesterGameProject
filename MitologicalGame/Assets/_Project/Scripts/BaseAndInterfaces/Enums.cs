@@ -8,4 +8,11 @@ namespace _Project.Scripts.BaseAndInterfaces
         D,
         E,
     }
+
+    public enum CardStatus
+    {
+        Opened,
+        Closed,
+    }
+    
 }

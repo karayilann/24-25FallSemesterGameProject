@@ -2,8 +2,10 @@
 
 using System.Collections.Generic;
 using _Project.Scripts.BaseAndInterfaces;
+using _Project.Scripts.GameManagement;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace _Project.Scripts.Card
 {
@@ -15,13 +17,15 @@ namespace _Project.Scripts.Card
         private int _index;
         private CardType _cardType;
         public CardType CardType => _cardType;
+        public CardStatus cardStatus;
     
         public TextMeshProUGUI cardText;
         public DragAndDrop dragAndDrop;
     
         private bool _isInitialized = false;
         private CardBehaviours _selectedCard;
-    
+        private NewGameManager _newGameManager;
+        
         private void Start()
         {
             cardContainer = FindObjectOfType<CardContainer>();
@@ -30,6 +34,7 @@ namespace _Project.Scripts.Card
                 Debug.LogError("CardContainer is null");
                 return;
             }
+            _newGameManager = NewGameManager.Instance;
             _list = cardContainer.cardPositions;
             dragAndDrop.canDrag = true;
         }
@@ -76,14 +81,27 @@ namespace _Project.Scripts.Card
             _selectedCard = null;
             Debug.Log($"Eşleşme yapıldı - Kart: {card.CardType}, Parent: {targetParent.name}");
         
-            // 3'lü eşleşme kontrolü
-            if (targetParent.childCount == 3)
+            if (targetParent.childCount != 3) return;
+            if (_newGameManager.CheckForCorrectCardType(card.CardType))
             {
-                Debug.Log("3'lü eşleşme yapıldı");
                 MoveToCorrectMatchZone();
+                _newGameManager.ChangeForesightCount(+1);
+                Debug.Log("3'lü eşleşme yapıldı");
+            }
+            else
+            {
+                _newGameManager.ChangeSuspicionCount(+1);
+                for (int i = 0; i < targetParent.childCount; i++)
+                {
+                    GameObject obj = targetParent.GetChild(i).gameObject;
+                    Destroy(obj);
+                    Debug.Log("Destroyed : " + obj.name);
+                    
+                }
+                Debug.LogWarning("Yanlış 3'lü eşleşme yapıldı");
             }
         }
-
+        
         private void MoveToCorrectMatchZone()
         {
             Transform currentParent = transform.parent;

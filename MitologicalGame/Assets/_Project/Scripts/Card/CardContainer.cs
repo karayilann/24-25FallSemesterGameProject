@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using _Project.Scripts.BaseAndInterfaces;
 using _Project.Scripts.GameManagement;
@@ -15,12 +16,17 @@ namespace _Project.Scripts.Card
         private List<CardType> _requiredCardTypes;
         [FormerlySerializedAs("_availableCardTypes")] public List<CardType> availableCardTypes;
 
-        private const int TotalCardCount = 25; // Toplam kart sayısı (5 kart türünden her biri 5 adet)
+        [SerializeField] private int closedCardsCount = 0;
+        private List<int> closedCardPositions = new List<int>();
+        private const int TotalCardCount = 25;
+
+        private readonly Vector3 closedRotation = new Vector3(-180, -270, 0); // Kapalı kart Y ekseninde -270 derece
+        private readonly Vector3 openRotation = new Vector3(-180, -90, 0);    // Açık kart Y ekseninde -90 derece
 
         private void Start()
         {
             InitializeContainer();
-            PrepareCardDeck(); // Tüm kartlardan 5 tane olacak şekilde hazırlık
+            PrepareCardDeck();
             OrderCards();
         }
 
@@ -34,6 +40,12 @@ namespace _Project.Scripts.Card
             {
                 _cardStatus.Add(i, true);
             }
+        }
+
+        public void SetClosedCardsCount(int count)
+        {
+            closedCardsCount = Mathf.Min(count, cardPositions.Count);
+            closedCardPositions.Clear();
         }
 
         public void CheckForEmptyPositions()
@@ -59,7 +71,7 @@ namespace _Project.Scripts.Card
 
             if (hasEmptyPositions)
             {
-                ShuffleCards(availableCardTypes); // Desteden rastgele kart seçimi için karıştırma
+                ShuffleCards(availableCardTypes);
                 OrderCards();
             }
         }
@@ -67,6 +79,21 @@ namespace _Project.Scripts.Card
         public void OrderCards()
         {
             int currentCardIndex = 0;
+            closedCardPositions.Clear();
+
+            // Randomly select positions for closed cards
+            List<int> availablePositions = new List<int>();
+            for (int i = 0; i < _cardStatus.Count; i++)
+            {
+                if (_cardStatus[i]) availablePositions.Add(i);
+            }
+
+            for (int i = 0; i < closedCardsCount && availablePositions.Count > 0; i++)
+            {
+                int randomIndex = UnityEngine.Random.Range(0, availablePositions.Count);
+                closedCardPositions.Add(availablePositions[randomIndex]);
+                availablePositions.RemoveAt(randomIndex);
+            }
 
             for (int i = 0; i < _cardStatus.Count; i++)
             {
@@ -81,6 +108,9 @@ namespace _Project.Scripts.Card
                     {
                         cardBehavior.SetCardType(availableCardTypes[currentCardIndex]);
                         cardBehavior.Initialize();
+                        
+                        bool shouldBeClosed = closedCardPositions.Contains(i);
+                        SetupCardState(card, cardBehavior, shouldBeClosed);
                     }
 
                     _cardStatus[i] = false;
@@ -97,6 +127,60 @@ namespace _Project.Scripts.Card
             {
                 Debug.LogWarning("All cards have been used. No more cards in the deck.");
                 AddCardFromDiscardPile();
+            }
+        }
+
+        private void SetupCardState(GameObject cardObject, CardBehaviours cardBehavior, bool isClosed)
+        {
+            var dragAndDrop = cardObject.GetComponent<DragAndDrop>();
+            if (dragAndDrop != null)
+            {
+                dragAndDrop.canDrag = !isClosed;
+            }
+
+            if (isClosed)
+            {
+                cardObject.transform.rotation = Quaternion.Euler(closedRotation);
+                cardBehavior.CurrentStatus = CardStatus.Closed;
+            }
+            else
+            {
+                cardObject.transform.rotation = Quaternion.Euler(openRotation);
+                cardBehavior.CurrentStatus = CardStatus.Opened;
+            }
+        }
+
+        public void OnCardClicked(GameObject cardObject)
+        {
+            var cardBehavior = cardObject.GetComponent<CardBehaviours>();
+            var dragAndDrop = cardObject.GetComponent<DragAndDrop>();
+
+            if (cardBehavior != null && cardBehavior.CurrentStatus == CardStatus.Closed)
+            {
+                StartCoroutine(FlipCard(cardObject, cardBehavior, dragAndDrop));
+            }
+        }
+
+        private IEnumerator FlipCard(GameObject cardObject, CardBehaviours cardBehavior, DragAndDrop dragAndDrop)
+        {
+            float duration = 0.5f;
+            float elapsed = 0f;
+            Quaternion startRotation = Quaternion.Euler(closedRotation);
+            Quaternion targetRotation = Quaternion.Euler(openRotation);
+
+            while (elapsed < duration)
+            {
+                elapsed += Time.deltaTime;
+                float t = elapsed / duration;
+                cardObject.transform.rotation = Quaternion.Lerp(startRotation, targetRotation, t);
+                yield return null;
+            }
+
+            cardObject.transform.rotation = targetRotation;
+            cardBehavior.CurrentStatus = CardStatus.Opened;
+            if (dragAndDrop != null)
+            {
+                dragAndDrop.canDrag = true;
             }
         }
 

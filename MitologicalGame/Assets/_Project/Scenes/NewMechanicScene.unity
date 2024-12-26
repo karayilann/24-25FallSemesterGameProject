@@ -1665,7 +1665,7 @@ AudioListener:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1135801127}
-  m_Enabled: 0
+  m_Enabled: 1
 --- !u!20 &1135801129
 Camera:
   m_ObjectHideFlags: 0
@@ -2850,6 +2850,7 @@ MonoBehaviour:
   - {fileID: 773290570}
   cardPrefab: {fileID: 3214920459486077198, guid: 49c951ac3a955f54e9329fecc6e620b5, type: 3}
   availableCardTypes: 
+  closedCardsCount: 2
 --- !u!33 &4060617356693311006
 MeshFilter:
   m_ObjectHideFlags: 0
@@ -3293,16 +3294,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1090aadfbf80154da5cf83c9dbc5e7a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  popUpNotification: {fileID: 984353150}
   popUpNotificationText: {fileID: 165341940}
   foresightCountText: {fileID: 1834940086}
   suspicionCountText: {fileID: 5718343}
-  discardedCards: []
-  isDiscarded: 0
+  popUpNotification: {fileID: 984353150}
   cardContainer: {fileID: 4007803370760898698}
-  requiredCardTypes: 000000000100000002000000
+  isDiscarded: 0
   foresightCount: 0
   suspicionCount: 0
+  closedCardCount: 0
+  discardedCards: []
+  requiredCardTypes: 000000000100000002000000
 --- !u!23 &7554811355742878826
 MeshRenderer:
   m_ObjectHideFlags: 0

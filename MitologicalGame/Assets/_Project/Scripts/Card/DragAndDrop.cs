@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using _Project.Scripts.GameManagement;
 using UnityEngine;
 
@@ -5,21 +7,51 @@ namespace _Project.Scripts.Card
 {
     public class DragAndDrop : MonoBehaviour
     {
-        private Vector3 _mousePosition;
+        public Vector3 dropOffset;
+        
+        [Header("Card Settings")]
+        public CardBehaviours cardBehaviours;
+        public Collider cardCollider;
         public bool canDrag = true;
         public bool isProccessed;
         private bool _isDropped;
-        private Vector3 _initialPosition;
-        public Vector3 dropOffset;
-        public CardBehaviours cardBehaviours;
+        private bool _isInteracted;
+        
+        [Header("Audio Settings")]
+        public AudioSource audioSource;
+        //[0]: Hover Sound, [1]: Drag Sound
+        public List<AudioClip> audioClips;
+        
         private Camera _mainCamera;
-        public Collider cardCollider;
+        
+        private Vector3 _mousePosition;
+        private Vector3 _initialPosition;
+        
         
         private void Awake()
         {
             _mainCamera = Camera.main;
         }
+        
+        private void OnMouseEnter()
+        {
+            if(_isInteracted)return;
+            PlayHoverSound();
+        }
 
+        private void OnMouseExit()
+        {
+            _isInteracted = false;
+        }
+
+        private void PlayHoverSound(int clipIndex = 0)
+        {
+            if (audioSource != null && !audioSource.isPlaying && !_isInteracted)
+            {
+                audioSource.PlayOneShot(audioClips[clipIndex]);
+            }
+        }
+        
         private Vector3 GetMousePosition()
         {
             return _mainCamera.WorldToScreenPoint(transform.position);
@@ -36,10 +68,8 @@ namespace _Project.Scripts.Card
             if (!canDrag) return;
 
             transform.position = _mainCamera.ScreenToWorldPoint(Input.mousePosition - _mousePosition);
-
-            var direction = (_mainCamera.transform.position - transform.position).normalized;
-            var rayOrigin = (transform.position - direction * 100);
-            Debug.DrawRay(rayOrigin, direction * 1000, Color.green, 0.1f);
+            PlayHoverSound(1);
+            _isInteracted = true;
         }
         
         private void OnMouseUp()

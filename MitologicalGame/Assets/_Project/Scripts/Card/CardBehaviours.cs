@@ -1,5 +1,3 @@
-// CardBehaviours.cs
-
 using System.Collections.Generic;
 using _Project.Scripts.BaseAndInterfaces;
 using _Project.Scripts.GameManagement;
@@ -17,7 +15,7 @@ namespace _Project.Scripts.Card
         private int _index;
         private CardType _cardType;
         public CardType CardType => _cardType;
-        public CardStatus cardStatus;
+        public CardStatus CurrentStatus { get; set; }
     
         public TextMeshProUGUI cardText;
         public DragAndDrop dragAndDrop;
@@ -36,7 +34,8 @@ namespace _Project.Scripts.Card
             }
             _newGameManager = NewGameManager.Instance;
             _list = cardContainer.cardPositions;
-            dragAndDrop.canDrag = true;
+            
+            // Drag özelliği artık Initialize'da veya kart açıldığında set edilecek
         }
 
         public void SetCardType(CardType cardType)
@@ -47,13 +46,26 @@ namespace _Project.Scripts.Card
         public void Initialize()
         {
             if (_isInitialized) return;
+            
             cardText.text = _cardType.ToString();
-            _isInitialized = true; 
+            CurrentStatus = CardStatus.Opened; // Varsayılan durum - CardContainer'da değiştirilebilir
+            dragAndDrop.canDrag = CurrentStatus == CardStatus.Opened; // Sadece açık kartlar sürüklenebilir
+            
+            _isInitialized = true;
+        }
+
+        private void OnMouseDown()
+        {
+            if (CurrentStatus == CardStatus.Closed)
+            {
+                cardContainer?.OnCardClicked(gameObject);
+                return;
+            }
         }
     
         public void CheckCard(CardBehaviours card)
         {
-            if (!card.dragAndDrop.canDrag) return;
+            if (!card.dragAndDrop.canDrag || CurrentStatus == CardStatus.Closed) return;
             if (card.CardType == CardType && card != this)
             {
                 _selectedCard = card;
@@ -63,7 +75,7 @@ namespace _Project.Scripts.Card
 
         private void CorrectCard(CardBehaviours card)
         {
-            if (!card.dragAndDrop.canDrag) return;
+            if (!card.dragAndDrop.canDrag || card.CurrentStatus == CardStatus.Closed) return;
         
             Vector3 targetPos = transform.position;
             Transform targetParent = transform.parent;

@@ -81,6 +81,21 @@ namespace _Project.Scripts.Card
         {
             if (!card.dragAndDrop.canDrag || card.CurrentStatus == CardStatus.Closed) return;
         
+            if (_newGameManager.CheckForCorrectCardType(card.CardType))
+            {
+                MoveToCorrectMatchZone();
+                _newGameManager.ChangeForesightCount(+1);
+                Debug.Log("2'lü eşleşme yapıldı");
+            }
+            else
+            {
+                _newGameManager.ChangeSuspicionCount(+1);
+                card.dragAndDrop.isProccessed = false;
+                card.dragAndDrop.canDrag = true;
+                Debug.LogWarning("Yanlış 2'lü eşleşme yapıldı");
+                return;
+            }
+            
             Vector3 targetPos = transform.position;
             Transform targetParent = transform.parent;
         
@@ -97,19 +112,7 @@ namespace _Project.Scripts.Card
             _selectedCard = null;
             Debug.Log($"Eşleşme yapıldı - Kart: {card.CardType}, Parent: {targetParent.name}");
         
-            if (_newGameManager.CheckForCorrectCardType(card.CardType))
-            {
-                MoveToCorrectMatchZone();
-                _newGameManager.ChangeForesightCount(+1);
-                Debug.Log("2'lü eşleşme yapıldı");
-            }
-            else
-            {
-                _newGameManager.ChangeSuspicionCount(+1);
-                card.dragAndDrop.isProccessed = false;
-                card.dragAndDrop.canDrag = true;
-                Debug.LogWarning("Yanlış 2'lü eşleşme yapıldı");
-            }
+            
         }
         
         private void MoveToCorrectMatchZone()

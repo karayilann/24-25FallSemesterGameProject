@@ -2850,7 +2850,7 @@ MonoBehaviour:
   - {fileID: 773290570}
   cardPrefab: {fileID: 3214920459486077198, guid: 49c951ac3a955f54e9329fecc6e620b5, type: 3}
   availableCardTypes: 
-  closedCardsCount: 2
+  closedCardsCount: 0
 --- !u!33 &4060617356693311006
 MeshFilter:
   m_ObjectHideFlags: 0

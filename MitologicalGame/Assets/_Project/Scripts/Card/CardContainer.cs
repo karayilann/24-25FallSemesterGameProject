@@ -18,12 +18,12 @@ namespace _Project.Scripts.Card
         [FormerlySerializedAs("_availableCardTypes")] public List<CardType> availableCardTypes;
 
         [SerializeField] private int closedCardsCount = 0;
-        private List<int> closedCardPositions = new List<int>();
+        private List<int> _closedCardPositions = new List<int>();
         private const int TotalCardCount = 25;
         private NewGameManager _newGameManager;
         
-        private readonly Vector3 closedRotation = new Vector3(-180, -270, 0); // Kapalı kart Y ekseninde -270 derece
-        private readonly Vector3 openRotation = new Vector3(-180, -90, 0);    // Açık kart Y ekseninde -90 derece
+        private readonly Vector3 _closedRotation = new Vector3(-180, -270, 0); // Kapalı kart Y ekseninde -270 derece
+        private readonly Vector3 _openRotation = new Vector3(-180, -90, 0);    // Açık kart Y ekseninde -90 derece
         
         private void Start()
         {
@@ -45,21 +45,20 @@ namespace _Project.Scripts.Card
             }
         }
 
-        /*
-         * 
-         */
-        /// <summary>
-        /// Simple Use cardContainer.SetClosedCardsCount(3); // 3 kart kapalı olacak
-        /// cardContainer.OrderCards(); Kartları yeniden çağırır ve kapalı kartları belirler
-        /// </summary>
-        /// <param name="count"></param>
         public void SetClosedCardsCount(int count)
         {
             closedCardsCount = Mathf.Min(count, cardPositions.Count);
-            closedCardPositions.Clear();
+            _closedCardPositions.Clear();
+        }
+        
+        public void SetClosedCardsCountBasedOnChance(int chancePercentage)
+        {
+            int maxClosedCards = Mathf.CeilToInt((chancePercentage / 100f) * cardPositions.Count);
+            closedCardsCount = Mathf.Min(maxClosedCards, cardPositions.Count);
+            _closedCardPositions.Clear();
         }
 
-        public void CheckForEmptyPositions(int closeCardCount = 0)
+        public void CheckForEmptyPositions(int chancePercentage = 0)
         {
             bool hasEmptyPositions = false;
             int emptyCount = 0;
@@ -82,9 +81,13 @@ namespace _Project.Scripts.Card
 
             if (hasEmptyPositions)
             {
-                //SetClosedCardsCount(t); // Yukarıda veya aşağıda denenecek
+                int closedCardChance = _newGameManager.GetClosedCardChance();
+
+                int totalCards = cardPositions.Count;
+                int closedCardCount = Mathf.RoundToInt(totalCards * (closedCardChance / 100f));
+
+                SetClosedCardsCount(closedCardCount);
                 ShuffleCards(availableCardTypes);
-                //SetClosedCardsCount(t);
                 OrderCards();
             }
         }
@@ -92,7 +95,7 @@ namespace _Project.Scripts.Card
         public void OrderCards()
         {
             int currentCardIndex = 0;
-            closedCardPositions.Clear();
+            _closedCardPositions.Clear();
 
             // Randomly select positions for closed cards
             List<int> availablePositions = new List<int>();
@@ -104,7 +107,7 @@ namespace _Project.Scripts.Card
             for (int i = 0; i < closedCardsCount && availablePositions.Count > 0; i++)
             {
                 int randomIndex = Random.Range(0, availablePositions.Count);
-                closedCardPositions.Add(availablePositions[randomIndex]);
+                _closedCardPositions.Add(availablePositions[randomIndex]);
                 availablePositions.RemoveAt(randomIndex);
             }
 
@@ -122,7 +125,7 @@ namespace _Project.Scripts.Card
                         cardBehavior.SetCardType(availableCardTypes[currentCardIndex]);
                         cardBehavior.Initialize();
                         
-                        bool shouldBeClosed = closedCardPositions.Contains(i);
+                        bool shouldBeClosed = _closedCardPositions.Contains(i);
                         SetupCardState(card, cardBehavior, shouldBeClosed);
                     }
 
@@ -153,20 +156,18 @@ namespace _Project.Scripts.Card
 
             if (isClosed)
             {
-                cardObject.transform.rotation = Quaternion.Euler(closedRotation);
+                cardObject.transform.rotation = Quaternion.Euler(_closedRotation);
                 cardBehavior.CurrentStatus = CardStatus.Closed;
             }
             else
             {
-                cardObject.transform.rotation = Quaternion.Euler(openRotation);
+                cardObject.transform.rotation = Quaternion.Euler(_openRotation);
                 cardBehavior.CurrentStatus = CardStatus.Opened;
             }
         }
 
         public void OnCardClicked(GameObject cardObject)
         {
-            // Bu kısımda eğer öngörü puanı 0 ise kartı açma işlemi yapılmasın
-
             if(_newGameManager.ForesightCount == 0) return;
             var cardBehavior = cardObject.GetComponent<CardBehaviours>();
             var dragAndDrop = cardBehavior.dragAndDrop;
@@ -181,8 +182,8 @@ namespace _Project.Scripts.Card
         {
             float duration = 0.5f;
             float elapsed = 0f;
-            Quaternion startRotation = Quaternion.Euler(closedRotation);
-            Quaternion targetRotation = Quaternion.Euler(openRotation);
+            Quaternion startRotation = Quaternion.Euler(_closedRotation);
+            Quaternion targetRotation = Quaternion.Euler(_openRotation);
 
             while (elapsed < duration)
             {
@@ -203,7 +204,6 @@ namespace _Project.Scripts.Card
 
         private void AddCardFromDiscardPile()
         {
-            
             if (_newGameManager.discardedCards.Count == 0)
             {
                 Debug.LogWarning("No discarded cards to add.");
@@ -227,6 +227,7 @@ namespace _Project.Scripts.Card
         {
             availableCardTypes = new List<CardType>();
 
+            // Kartlar tamamlandıktan sonra public bir listede kartların prefableri olacak bunları buradan ekleyip başlatacağız
             var cardTypes = Enum.GetValues(typeof(CardType));
 
             foreach (CardType type in cardTypes)

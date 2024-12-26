@@ -83,6 +83,7 @@ namespace _Project.Scripts.Card
         
             if (_newGameManager.CheckForCorrectCardType(card.CardType))
             {
+                OnCardsMatch(card);
                 MoveToCorrectMatchZone();
                 _newGameManager.ChangeForesightCount(+1);
                 Debug.Log("2'lü eşleşme yapıldı");
@@ -95,7 +96,10 @@ namespace _Project.Scripts.Card
                 Debug.LogWarning("Yanlış 2'lü eşleşme yapıldı");
                 return;
             }
-            
+        }
+
+        private void OnCardsMatch(CardBehaviours card)
+        {
             Vector3 targetPos = transform.position;
             Transform targetParent = transform.parent;
         
@@ -111,10 +115,8 @@ namespace _Project.Scripts.Card
         
             _selectedCard = null;
             Debug.Log($"Eşleşme yapıldı - Kart: {card.CardType}, Parent: {targetParent.name}");
-        
-            
         }
-        
+
         private void MoveToCorrectMatchZone()
         {
             Transform currentParent = transform.parent;

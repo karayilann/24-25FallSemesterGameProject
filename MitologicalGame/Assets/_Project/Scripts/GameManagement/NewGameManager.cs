@@ -45,14 +45,26 @@ namespace _Project.Scripts.GameManagement
                 suspicionCountText.text = "Şüphe Puanı: " + suspicionCount.ToString();
             }
         }
+        
+        [SerializeField] private Dictionary<int, int> suspicionToClosedCardChance = new Dictionary<int, int>();
 
+        private void Start()
+        {
+            suspicionToClosedCardChance.Add(1, 3); 
+            suspicionToClosedCardChance.Add(2, 30); 
+            suspicionToClosedCardChance.Add(3, 50); // %50 şans
+        }
+
+        
         public void NextRound()
         {
             if (isDiscarded && cardContainer != null)
             {
-                cardContainer.CheckForEmptyPositions();
+                int closedCardChance = CalculateClosedCardChance();
+                cardContainer.CheckForEmptyPositions(closedCardChance);
                 isDiscarded = false;
-            }else
+            }
+            else
             {
                 // popUpNotification.transform.DOLocalMoveY(186.1807f, .5f)
                 //     .OnStart(() => popUpNotificationText.text = "Please discard the card first!").OnComplete(() =>
@@ -82,12 +94,23 @@ namespace _Project.Scripts.GameManagement
         {
             SuspicionCount += amount;
         }
-     
-        private int CalculateClosedCardCount()
-        {
-            closedCardCount = suspicionCount / 8;
-            return closedCardCount;
-        }
         
+        public int GetClosedCardChance()
+        {
+            if (suspicionToClosedCardChance.TryGetValue(suspicionCount, out int chance))
+            {
+                return chance;
+            }
+
+            return 0;
+        }
+
+        
+        private int CalculateClosedCardChance()
+        {
+            int chance = Mathf.Clamp(suspicionCount * 20, 0, 100);
+            Debug.Log("Closed card chance calculated: " + chance + "%");
+            return chance;
+        }
     }
 }

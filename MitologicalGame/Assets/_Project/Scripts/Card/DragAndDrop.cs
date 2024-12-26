@@ -19,6 +19,7 @@ namespace _Project.Scripts.Card
         
         [Header("Audio Settings")]
         public AudioSource audioSource;
+        
         //[0]: Hover Sound, [1]: Drag Sound
         public List<AudioClip> audioClips;
         

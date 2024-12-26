@@ -25,6 +25,8 @@ namespace _Project.Scripts.GameManagement
 
         public List<CardBehaviours> discardedCards;
         public List<CardType> requiredCardTypes;
+        [SerializeField] private readonly Dictionary<int, int> _suspicionToClosedCardChance = new Dictionary<int, int>();
+        
         
         public int ForesightCount
         {
@@ -46,13 +48,12 @@ namespace _Project.Scripts.GameManagement
             }
         }
         
-        [SerializeField] private Dictionary<int, int> suspicionToClosedCardChance = new Dictionary<int, int>();
 
         private void Start()
         {
-            suspicionToClosedCardChance.Add(1, 3); 
-            suspicionToClosedCardChance.Add(2, 30); 
-            suspicionToClosedCardChance.Add(3, 50); // %50 şans
+            _suspicionToClosedCardChance.Add(1, 3); // %3 şans
+            _suspicionToClosedCardChance.Add(2, 30); 
+            _suspicionToClosedCardChance.Add(3, 50); 
         }
 
         
@@ -60,8 +61,8 @@ namespace _Project.Scripts.GameManagement
         {
             if (isDiscarded && cardContainer != null)
             {
-                int closedCardChance = CalculateClosedCardChance();
-                cardContainer.CheckForEmptyPositions(closedCardChance);
+                //int closedCardChance = CalculateClosedCardChance();
+                cardContainer.CheckForEmptyPositions();
                 isDiscarded = false;
             }
             else
@@ -97,7 +98,7 @@ namespace _Project.Scripts.GameManagement
         
         public int GetClosedCardChance()
         {
-            if (suspicionToClosedCardChance.TryGetValue(suspicionCount, out int chance))
+            if (_suspicionToClosedCardChance.TryGetValue(suspicionCount, out int chance))
             {
                 return chance;
             }

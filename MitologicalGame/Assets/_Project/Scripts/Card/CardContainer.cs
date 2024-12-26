@@ -5,6 +5,7 @@ using _Project.Scripts.BaseAndInterfaces;
 using _Project.Scripts.GameManagement;
 using UnityEngine;
 using UnityEngine.Serialization;
+using Random = UnityEngine.Random;
 
 namespace _Project.Scripts.Card
 {
@@ -42,13 +43,21 @@ namespace _Project.Scripts.Card
             }
         }
 
+        /*
+         * 
+         */
+        /// <summary>
+        /// Simple Use cardContainer.SetClosedCardsCount(3); // 3 kart kapalı olacak
+        /// cardContainer.OrderCards(); Kartları yeniden çağırır ve kapalı kartları belirler
+        /// </summary>
+        /// <param name="count"></param>
         public void SetClosedCardsCount(int count)
         {
             closedCardsCount = Mathf.Min(count, cardPositions.Count);
             closedCardPositions.Clear();
         }
 
-        public void CheckForEmptyPositions()
+        public void CheckForEmptyPositions(int closeCardCount = 0)
         {
             bool hasEmptyPositions = false;
             int emptyCount = 0;
@@ -71,7 +80,9 @@ namespace _Project.Scripts.Card
 
             if (hasEmptyPositions)
             {
+                //SetClosedCardsCount(t); // Yukarıda veya aşağıda denenecek
                 ShuffleCards(availableCardTypes);
+                //SetClosedCardsCount(t);
                 OrderCards();
             }
         }
@@ -90,7 +101,7 @@ namespace _Project.Scripts.Card
 
             for (int i = 0; i < closedCardsCount && availablePositions.Count > 0; i++)
             {
-                int randomIndex = UnityEngine.Random.Range(0, availablePositions.Count);
+                int randomIndex = Random.Range(0, availablePositions.Count);
                 closedCardPositions.Add(availablePositions[randomIndex]);
                 availablePositions.RemoveAt(randomIndex);
             }
@@ -152,8 +163,9 @@ namespace _Project.Scripts.Card
 
         public void OnCardClicked(GameObject cardObject)
         {
+            // Bu kısımda eğer öngörü puanı 0 ise kartı açma işlemi yapılmasın
             var cardBehavior = cardObject.GetComponent<CardBehaviours>();
-            var dragAndDrop = cardObject.GetComponent<DragAndDrop>();
+            var dragAndDrop = cardBehavior.dragAndDrop;
 
             if (cardBehavior != null && cardBehavior.CurrentStatus == CardStatus.Closed)
             {
@@ -234,7 +246,7 @@ namespace _Project.Scripts.Card
             while (n > 1)
             {
                 n--;
-                int k = UnityEngine.Random.Range(0, n + 1);
+                int k = Random.Range(0, n + 1);
                 (cards[k], cards[n]) = (cards[n], cards[k]);
             }
         }

@@ -4,24 +4,28 @@ using _Project.Scripts.Card;
 using _Project.Scripts.CoreScripts;
 using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace _Project.Scripts.GameManagement
 {
     public class NewGameManager : MonoSingleton<NewGameManager>
     {   
-        public GameObject popUpNotification;
+        [Header("UI Elements")]
         public TextMeshProUGUI popUpNotificationText;
         public TextMeshProUGUI foresightCountText;
         public TextMeshProUGUI suspicionCountText;
-        public List<CardBehaviours> discardedCards;
-        public bool isDiscarded = false;
+        
+        public GameObject popUpNotification;
         public CardContainer cardContainer;
-        public List<CardType> requiredCardTypes;
+        
+        public bool isDiscarded = false;
         
         [SerializeField] private int foresightCount;
         [SerializeField] private int suspicionCount;
+        [SerializeField] private int closedCardCount;
 
+        public List<CardBehaviours> discardedCards;
+        public List<CardType> requiredCardTypes;
+        
         public int ForesightCount
         {
             get => foresightCount;
@@ -44,7 +48,7 @@ namespace _Project.Scripts.GameManagement
 
         public void NextRound()
         {
-            if (isDiscarded)
+            if (isDiscarded && cardContainer != null)
             {
                 cardContainer.CheckForEmptyPositions();
                 isDiscarded = false;
@@ -77,6 +81,12 @@ namespace _Project.Scripts.GameManagement
         public void ChangeSuspicionCount(int amount)
         {
             SuspicionCount += amount;
+        }
+     
+        private int CalculateClosedCardCount()
+        {
+            closedCardCount = suspicionCount / 8;
+            return closedCardCount;
         }
         
     }

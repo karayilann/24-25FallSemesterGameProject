@@ -20,15 +20,17 @@ namespace _Project.Scripts.Card
         [SerializeField] private int closedCardsCount = 0;
         private List<int> closedCardPositions = new List<int>();
         private const int TotalCardCount = 25;
-
+        private NewGameManager _newGameManager;
+        
         private readonly Vector3 closedRotation = new Vector3(-180, -270, 0); // Kapalı kart Y ekseninde -270 derece
         private readonly Vector3 openRotation = new Vector3(-180, -90, 0);    // Açık kart Y ekseninde -90 derece
-
+        
         private void Start()
         {
             InitializeContainer();
             PrepareCardDeck();
             OrderCards();
+            _newGameManager = NewGameManager.Instance;
         }
 
         private void InitializeContainer()
@@ -164,6 +166,8 @@ namespace _Project.Scripts.Card
         public void OnCardClicked(GameObject cardObject)
         {
             // Bu kısımda eğer öngörü puanı 0 ise kartı açma işlemi yapılmasın
+
+            if(_newGameManager.ForesightCount == 0) return;
             var cardBehavior = cardObject.GetComponent<CardBehaviours>();
             var dragAndDrop = cardBehavior.dragAndDrop;
 
@@ -193,19 +197,20 @@ namespace _Project.Scripts.Card
             if (dragAndDrop != null)
             {
                 dragAndDrop.canDrag = true;
+                _newGameManager.ChangeForesightCount(-1);
             }
         }
 
         private void AddCardFromDiscardPile()
         {
-            var newGameManager = NewGameManager.Instance;
-            if (newGameManager.discardedCards.Count == 0)
+            
+            if (_newGameManager.discardedCards.Count == 0)
             {
                 Debug.LogWarning("No discarded cards to add.");
                 return;
             }
 
-            foreach (var card in newGameManager.discardedCards)
+            foreach (var card in _newGameManager.discardedCards)
             {
                 card.dragAndDrop.cardCollider.enabled = true;
                 card.dragAndDrop.canDrag = true;
@@ -214,8 +219,8 @@ namespace _Project.Scripts.Card
             }
             
             ShuffleCards(availableCardTypes);
-            if(newGameManager.discardedCards.Count != 0) return;
-            NewGameManager.Instance.discardedCards.Clear();
+            if(_newGameManager.discardedCards.Count != 0) return;
+            _newGameManager.discardedCards.Clear();
         }
 
         private void PrepareCardDeck()

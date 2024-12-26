@@ -75,7 +75,7 @@ namespace _Project.Scripts.Card
         private void OnMouseUp()
         {
             if (!canDrag) return;
-            CheckForDropZone();
+            CheckForHits();
         
             if (!isProccessed && !_isDropped)
             {
@@ -83,7 +83,7 @@ namespace _Project.Scripts.Card
             }
         }
 
-        private void CheckForDropZone()
+        private void CheckForHits()
         {
             var direction = (_mainCamera.transform.position - transform.position).normalized;
             Ray ray = new Ray(transform.position - direction * 100, direction);
@@ -112,8 +112,6 @@ namespace _Project.Scripts.Card
                 transform.position = _initialPosition;
             }
         }
-
-
 
         private void ProcessHit(RaycastHit hit)
         {
@@ -147,11 +145,13 @@ namespace _Project.Scripts.Card
 
         private void HandleDiscardZone(GameObject zone)
         {
+            var newGameManager = NewGameManager.Instance;
+            
             transform.SetParent(zone.transform);
             transform.position = zone.transform.position + dropOffset * 2;
-            NewGameManager.Instance.discardedCards.Add(cardBehaviours);
+            newGameManager.discardedCards.Add(cardBehaviours);
             cardCollider.enabled = false;
-            NewGameManager.Instance.isDiscarded = true;
+            newGameManager.isDiscarded = true;
             isProccessed = true;
             canDrag = false;
         }

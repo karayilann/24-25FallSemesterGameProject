@@ -65,11 +65,15 @@ namespace _Project.Scripts.Card
     
         public void CheckCard(CardBehaviours card)
         {
-            if (!card.dragAndDrop.canDrag || CurrentStatus == CardStatus.Closed) return;
-            if (card.CardType == CardType && card != this)
+            if (!card.dragAndDrop.canDrag || CurrentStatus == CardStatus.Closed || card == this) return;
+            if (card.CardType == CardType)
             {
                 _selectedCard = card;
                 CorrectCard(card);
+            }
+            else
+            {
+                _newGameManager.ChangeSuspicionCount(+1);
             }
         }
 
@@ -93,24 +97,18 @@ namespace _Project.Scripts.Card
             _selectedCard = null;
             Debug.Log($"Eşleşme yapıldı - Kart: {card.CardType}, Parent: {targetParent.name}");
         
-            if (targetParent.childCount != 3) return;
             if (_newGameManager.CheckForCorrectCardType(card.CardType))
             {
                 MoveToCorrectMatchZone();
                 _newGameManager.ChangeForesightCount(+1);
-                Debug.Log("3'lü eşleşme yapıldı");
+                Debug.Log("2'lü eşleşme yapıldı");
             }
             else
             {
                 _newGameManager.ChangeSuspicionCount(+1);
-                for (int i = 0; i < targetParent.childCount; i++)
-                {
-                    GameObject obj = targetParent.GetChild(i).gameObject;
-                    Destroy(obj);
-                    Debug.Log("Destroyed : " + obj.name);
-                    
-                }
-                Debug.LogWarning("Yanlış 3'lü eşleşme yapıldı");
+                card.dragAndDrop.isProccessed = false;
+                card.dragAndDrop.canDrag = true;
+                Debug.LogWarning("Yanlış 2'lü eşleşme yapıldı");
             }
         }
         
@@ -134,7 +132,6 @@ namespace _Project.Scripts.Card
                     cardBehaviour.dragAndDrop.isProccessed = true;
                 }
             }
-        
             Debug.Log("Kartlar doğru eşleşme alanına taşındı");
         }
 

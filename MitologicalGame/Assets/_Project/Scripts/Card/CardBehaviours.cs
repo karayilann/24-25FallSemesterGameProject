@@ -13,7 +13,7 @@ namespace _Project.Scripts.Card
         public RectTransform cardTransform;
         private List<Transform> _list;
         private int _index;
-        private CardType _cardType;
+        [SerializeField] private CardType _cardType;
         public CardType CardType => _cardType;
         public CardStatus CurrentStatus { get; set; }
     

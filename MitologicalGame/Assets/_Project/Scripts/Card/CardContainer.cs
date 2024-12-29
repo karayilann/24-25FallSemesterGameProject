@@ -15,7 +15,8 @@ namespace _Project.Scripts.Card
         public Dictionary<int, bool> _cardStatus;
         public GameObject cardPrefab;
         private List<CardType> _requiredCardTypes;
-        [FormerlySerializedAs("_availableCardTypes")] public List<CardType> availableCardTypes;
+        public List<CardType> availableCardTypes;
+        public List<CardBehaviours> cardBehaviours;
 
         [SerializeField] private int closedCardsCount = 0;
         private List<int> _closedCardPositions = new List<int>();
@@ -227,7 +228,16 @@ namespace _Project.Scripts.Card
         {
             availableCardTypes = new List<CardType>();
 
-            // Kartlar tamamlandıktan sonra public bir listede kartların prefableri olacak bunları buradan ekleyip başlatacağız
+            // Bu kısım kartlar tamamlandığında açılarak kullanılacak
+            // foreach (var card in cardBehaviours)
+            // {
+            //     for (int i = 0; i < 5; i++)
+            //     {
+            //         availableCardTypes.Add(card.CardType);
+            //     }
+            // }
+            
+            // Kartlar tamamlandığında bu kısım inaktif olacak
             var cardTypes = Enum.GetValues(typeof(CardType));
 
             foreach (CardType type in cardTypes)

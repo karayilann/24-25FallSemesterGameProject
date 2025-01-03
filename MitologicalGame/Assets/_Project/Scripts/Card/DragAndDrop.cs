@@ -149,7 +149,7 @@ namespace _Project.Scripts.Card
             var newGameManager = NewGameManager.Instance;
             
             transform.SetParent(zone.transform);
-            transform.position = zone.transform.position + dropOffset * 2;
+            transform.position = zone.transform.position + dropOffset * 0.5f;
             newGameManager.discardedCards.Add(cardBehaviours);
             cardCollider.enabled = false;
             newGameManager.isDiscarded = true;

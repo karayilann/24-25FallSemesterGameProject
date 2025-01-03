@@ -49,7 +49,7 @@ namespace _Project.Prefabs._2DCards._2DCardScripts
                     var cardBehavior = card.GetComponent<CardBehaviours>();
                     if (cardBehavior != null)
                     {
-                        cardBehavior.SetCardType(_requiredCardTypes[i]);
+                        //cardBehavior.SetCardType(_requiredCardTypes[i]);
                         cardBehavior.Initialize();
                     }
                 }

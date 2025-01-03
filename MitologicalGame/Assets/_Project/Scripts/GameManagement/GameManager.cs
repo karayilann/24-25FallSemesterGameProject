@@ -163,8 +163,8 @@ namespace _Project.Scripts.GameManagement
 
             Destroy(dissolveInstance[0]);
             
-            if (card1 != null) card1.DestroyCards();
-            if (card2 != null) card2.DestroyCards();
+            //if (card1 != null) card1.DestroyCards();
+            //if (card2 != null) card2.DestroyCards();
             
             dissolveInstance = null;
             Debug.Log("Dissolve efekti tamamlandı");

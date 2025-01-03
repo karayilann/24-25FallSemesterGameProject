@@ -17,7 +17,6 @@ namespace _Project.Scripts.Card
         public CardType CardType => _cardType;
         public CardStatus CurrentStatus { get; set; }
     
-        public TextMeshProUGUI cardText;
         public DragAndDrop dragAndDrop;
     
         private bool _isInitialized = false;
@@ -47,7 +46,6 @@ namespace _Project.Scripts.Card
         {
             if (_isInitialized) return;
             
-            cardText.text = _cardType.ToString();
             CurrentStatus = CardStatus.Opened; // Varsayılan durum - CardContainer'da değiştirilebilir
             dragAndDrop.canDrag = CurrentStatus == CardStatus.Opened; // Sadece açık kartlar sürüklenebilir
             

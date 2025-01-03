@@ -1,10 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine;
 using _Project.Scripts.BaseAndInterfaces;
 using _Project.Scripts.GameManagement;
-using UnityEngine;
-using UnityEngine.Serialization;
 using Random = UnityEngine.Random;
 
 namespace _Project.Scripts.Card
@@ -13,18 +12,16 @@ namespace _Project.Scripts.Card
     {
         [SerializeField] public List<Transform> cardPositions;
         public Dictionary<int, bool> _cardStatus;
-        public GameObject cardPrefab;
-        private List<CardType> _requiredCardTypes;
-        public List<CardType> availableCardTypes;
-        public List<CardBehaviours> cardBehaviours;
-
+        [SerializeField] private List<GameObject> cardPrefabs; // Card prefabs instead of types
+        private List<GameObject> _availableCards; // Available cards to spawn
+        
         [SerializeField] private int closedCardsCount = 0;
         private List<int> _closedCardPositions = new List<int>();
         private const int TotalCardCount = 25;
         private NewGameManager _newGameManager;
         
-        private readonly Vector3 _closedRotation = new Vector3(-180, -270, 0); // Kapalı kart Y ekseninde -270 derece
-        private readonly Vector3 _openRotation = new Vector3(-180, -90, 0);    // Açık kart Y ekseninde -90 derece
+        private readonly Vector3 _closedRotation = new Vector3(0, 90, 0);
+        private readonly Vector3 _openRotation = new Vector3(0, -90, 0);
         
         private void Start()
         {
@@ -37,9 +34,8 @@ namespace _Project.Scripts.Card
         private void InitializeContainer()
         {
             _cardStatus = new Dictionary<int, bool>();
-
             if (cardPositions.Count == 0) return;
-
+            
             for (int i = 0; i < cardPositions.Count; i++)
             {
                 _cardStatus.Add(i, true);
@@ -83,12 +79,11 @@ namespace _Project.Scripts.Card
             if (hasEmptyPositions)
             {
                 int closedCardChance = _newGameManager.GetClosedCardChance();
-
                 int totalCards = cardPositions.Count;
                 int closedCardCount = Mathf.RoundToInt(totalCards * (closedCardChance / 100f));
 
                 SetClosedCardsCount(closedCardCount);
-                ShuffleCards(availableCardTypes);
+                ShuffleCards(_availableCards);
                 OrderCards();
             }
         }
@@ -98,7 +93,6 @@ namespace _Project.Scripts.Card
             int currentCardIndex = 0;
             _closedCardPositions.Clear();
 
-            // Randomly select positions for closed cards
             List<int> availablePositions = new List<int>();
             for (int i = 0; i < _cardStatus.Count; i++)
             {
@@ -114,18 +108,16 @@ namespace _Project.Scripts.Card
 
             for (int i = 0; i < _cardStatus.Count; i++)
             {
-                if (_cardStatus[i] && cardPositions[i].childCount == 0 && currentCardIndex < availableCardTypes.Count)
+                if (_cardStatus[i] && cardPositions[i].childCount == 0 && currentCardIndex < _availableCards.Count)
                 {
-                    GameObject card = Instantiate(cardPrefab, cardPositions[i], true);
+                    GameObject card = Instantiate(_availableCards[currentCardIndex], cardPositions[i], true);
                     card.name = "Card " + i;
                     card.transform.position = cardPositions[i].position;
 
                     var cardBehavior = card.GetComponent<CardBehaviours>();
                     if (cardBehavior != null)
                     {
-                        cardBehavior.SetCardType(availableCardTypes[currentCardIndex]);
                         cardBehavior.Initialize();
-                        
                         bool shouldBeClosed = _closedCardPositions.Contains(i);
                         SetupCardState(card, cardBehavior, shouldBeClosed);
                     }
@@ -137,10 +129,10 @@ namespace _Project.Scripts.Card
 
             if (currentCardIndex > 0)
             {
-                availableCardTypes.RemoveRange(0, currentCardIndex);
+                _availableCards.RemoveRange(0, currentCardIndex);
             }
 
-            if (availableCardTypes.Count == 0)
+            if (_availableCards.Count == 0)
             {
                 Debug.LogWarning("All cards have been used. No more cards in the deck.");
                 AddCardFromDiscardPile();
@@ -211,52 +203,41 @@ namespace _Project.Scripts.Card
                 return;
             }
 
-            foreach (var card in _newGameManager.discardedCards)
+            foreach (var cardBehavior in _newGameManager.discardedCards)
             {
-                card.dragAndDrop.cardCollider.enabled = true;
-                card.dragAndDrop.canDrag = true;
-                card.dragAndDrop.isProccessed = false;
-                availableCardTypes.Add(card.CardType);
+                var cardPrefab = cardPrefabs.Find(p => p.GetComponent<CardBehaviours>().CardType == cardBehavior.CardType);
+                if (cardPrefab != null)
+                {
+                    _availableCards.Add(cardPrefab);
+                }
             }
             
-            ShuffleCards(availableCardTypes);
+            ShuffleCards(_availableCards);
             if(_newGameManager.discardedCards.Count != 0) return;
             _newGameManager.discardedCards.Clear();
         }
 
         private void PrepareCardDeck()
         {
-            availableCardTypes = new List<CardType>();
+            _availableCards = new List<GameObject>();
 
-            // Bu kısım kartlar tamamlandığında açılarak kullanılacak
-            // foreach (var card in cardBehaviours)
-            // {
-            //     for (int i = 0; i < 5; i++)
-            //     {
-            //         availableCardTypes.Add(card.CardType);
-            //     }
-            // }
-            
-            // Kartlar tamamlandığında bu kısım inaktif olacak
-            var cardTypes = Enum.GetValues(typeof(CardType));
-
-            foreach (CardType type in cardTypes)
+            foreach (var cardPrefab in cardPrefabs)
             {
                 for (int i = 0; i < 5; i++)
                 {
-                    availableCardTypes.Add(type);
+                    _availableCards.Add(cardPrefab);
                 }
             }
 
-            if (availableCardTypes.Count != TotalCardCount)
+            if (_availableCards.Count != TotalCardCount)
             {
-                Debug.LogError("Card deck setup error: Incorrect total card count.");
+                Debug.LogError($"Card deck setup error: Incorrect total card count. Expected {TotalCardCount}, got {_availableCards.Count}");
             }
 
-            ShuffleCards(availableCardTypes);
+            ShuffleCards(_availableCards);
         }
 
-        private void ShuffleCards(List<CardType> cards)
+        private void ShuffleCards(List<GameObject> cards)
         {
             int n = cards.Count;
             while (n > 1)

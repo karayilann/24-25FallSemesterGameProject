@@ -22,6 +22,8 @@ namespace _Project.Scripts.Card
         private bool _isInitialized = false;
         private CardBehaviours _selectedCard;
         private NewGameManager _newGameManager;
+
+        public RectTransform matchZone;
         
         private void Start()
         {
@@ -33,6 +35,7 @@ namespace _Project.Scripts.Card
             }
             _newGameManager = NewGameManager.Instance;
             _list = cardContainer.cardPositions;
+            matchZone = _newGameManager.matchZone;
             
             // Drag özelliği artık Initialize'da veya kart açıldığında set edilecek
         }
@@ -118,16 +121,25 @@ namespace _Project.Scripts.Card
         private void MoveToCorrectMatchZone()
         {
             Transform currentParent = transform.parent;
-            Vector3 targetPosition = new Vector3(166.710007f, -195.842422f, 90);
-        
-            // Önce tüm child kartları taşı
+    
             for (int i = currentParent.childCount - 1; i >= 0; i--)
             {
                 Transform child = currentParent.GetChild(i);
-                child.position = targetPosition + new Vector3(0, 0, -0.1f * i);
-                child.SetParent(null);
+        
+                child.SetParent(matchZone);
+        
+                RectTransform childRect = child.GetComponent<RectTransform>();
+                if (childRect != null)
+                {
+                    childRect.localScale *= 0.5f;
             
-                // Kart bileşenlerini devre dışı bırak
+                    childRect.anchoredPosition = new Vector2(0, -10f * i); // Her kartı biraz aşağıya kaydır
+            
+                    Vector3 localPos = childRect.localPosition;
+                    localPos.z = -0.1f * i;
+                    childRect.localPosition = localPos;
+                }
+        
                 var cardBehaviour = child.GetComponent<CardBehaviours>();
                 if (cardBehaviour != null)
                 {
@@ -135,7 +147,8 @@ namespace _Project.Scripts.Card
                     cardBehaviour.dragAndDrop.isProccessed = true;
                 }
             }
-            Debug.Log("Kartlar doğru eşleşme alanına taşındı");
+    
+            Debug.Log($"Kartlar {matchZone.name} alanına taşındı");
         }
 
         public void DestroyCards()

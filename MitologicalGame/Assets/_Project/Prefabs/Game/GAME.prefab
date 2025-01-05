@@ -144,7 +144,7 @@ GameObject:
   - component: {fileID: 5173306432838165652}
   - component: {fileID: 2532001215279815382}
   - component: {fileID: 3637963989943278950}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: CardMain
   m_TagString: Interactable
   m_Icon: {fileID: 0}
@@ -329,7 +329,7 @@ GameObject:
   - component: {fileID: 9173342348673965337}
   - component: {fileID: 7852999756624209829}
   - component: {fileID: 9187835711838363546}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: CardMain
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -456,7 +456,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5324836659939744415}
   - component: {fileID: 1275631299951293616}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: FullDeste
   m_TagString: Interactable
   m_Icon: {fileID: 0}
@@ -481,9 +481,9 @@ RectTransform:
   - {fileID: 109814027442959494}
   m_Father: {fileID: 8941581347642569828}
   m_LocalEulerAnglesHint: {x: -180, y: 90, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0.5}
-  m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 408.5123, y: 145.6159}
+  m_AnchorMin: {x: 1, y: 1}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: -74.70001, y: -143.1}
   m_SizeDelta: {x: 100, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &1275631299951293616
@@ -748,7 +748,7 @@ GameObject:
   - component: {fileID: 2319894716321696423}
   - component: {fileID: 2027404748975747566}
   - component: {fileID: 712273003074051884}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: DiscardZone
   m_TagString: DiscardZone
   m_Icon: {fileID: 0}
@@ -838,7 +838,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: 0, y: 40.200012}
+  m_AnchoredPosition: {x: 0, y: 20}
   m_SizeDelta: {x: 588.5, y: 80.4}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &2890647735196643263
@@ -1011,7 +1011,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 1, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: -45.19995, y: 21.150024}
+  m_AnchoredPosition: {x: -70.600006, y: 21.150024}
   m_SizeDelta: {x: 90.4, y: 42.3}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &8330253678380932425
@@ -1419,8 +1419,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4034302649625119730}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -21.386162, y: 47.184772, z: -49.68733}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -1465,7 +1465,7 @@ Camera:
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 55
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -1496,7 +1496,7 @@ GameObject:
   - component: {fileID: 4584711444132566067}
   - component: {fileID: 5377077533855161035}
   - component: {fileID: 1252954937562230003}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: CardMain
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1624,7 +1624,7 @@ GameObject:
   - component: {fileID: 6108476489551648732}
   - component: {fileID: 1957255601412475500}
   - component: {fileID: 122076427341555648}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: NameZone
   m_TagString: Interactable
   m_Icon: {fileID: 0}
@@ -1707,7 +1707,7 @@ GameObject:
   - component: {fileID: 8061257651055745271}
   - component: {fileID: 6371884019463772557}
   - component: {fileID: 2257007622854420228}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: NameZone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1860,7 +1860,7 @@ GameObject:
   - component: {fileID: 567509323924683642}
   - component: {fileID: 5039749559281079259}
   - component: {fileID: 4292716752819137607}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: NameZone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1943,7 +1943,7 @@ GameObject:
   - component: {fileID: 5509769183495186748}
   - component: {fileID: 8452969474626412859}
   - component: {fileID: 7589448801628905830}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: CardMain
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -2027,7 +2027,7 @@ GameObject:
   - component: {fileID: 456463730788372404}
   - component: {fileID: 3819665194746244234}
   - component: {fileID: 9133781652614645318}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Text (TMP)
   m_TagString: Interactable
   m_Icon: {fileID: 0}
@@ -2295,7 +2295,7 @@ GameObject:
   - component: {fileID: 2847940490752313366}
   - component: {fileID: 9197801968192365476}
   - component: {fileID: 8981827199332373818}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: DownDropZone
   m_TagString: DropZone
   m_Icon: {fileID: 0}
@@ -2386,7 +2386,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: 0, y: 33.299988}
+  m_AnchoredPosition: {x: 0, y: 33.30005}
   m_SizeDelta: {x: 295.9, y: 63}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &7489672076631457079
@@ -2521,7 +2521,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &6208686512767424561
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2634,7 +2634,7 @@ GameObject:
   - component: {fileID: 2929483181297628637}
   - component: {fileID: 7517763497329437022}
   - component: {fileID: 9178500598429159558}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: Icon
   m_TagString: Interactable
   m_Icon: {fileID: 0}
@@ -2717,7 +2717,7 @@ GameObject:
   - component: {fileID: 823267363605185684}
   - component: {fileID: 6233005315722432496}
   - component: {fileID: 7199775602370997646}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: UpDropZone
   m_TagString: DropZone
   m_Icon: {fileID: 0}
@@ -2967,7 +2967,7 @@ GameObject:
   - component: {fileID: 5271744055652568959}
   - component: {fileID: 9038728926687997522}
   - component: {fileID: 6779414585061270575}
-  m_Layer: 0
+  m_Layer: 5
   m_Name: NameZone
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -3152,6 +3152,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 9112684449847333052, guid: 22f6c0ded1aaa1843b05ca2745032a18, type: 3}
+      propertyPath: matchZone
+      value: 
+      objectReference: {fileID: 6782416773743641434}
+    - target: {fileID: 9112684449847333052, guid: 22f6c0ded1aaa1843b05ca2745032a18, type: 3}
       propertyPath: popUpNotification
       value: 
       objectReference: {fileID: 7384426789744603027}
@@ -3167,6 +3171,18 @@ PrefabInstance:
       propertyPath: popUpNotificationText
       value: 
       objectReference: {fileID: 7300055082643899637}
+    - target: {fileID: 9112684449847333052, guid: 22f6c0ded1aaa1843b05ca2745032a18, type: 3}
+      propertyPath: requiredCardTypes.Array.size
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 9112684449847333052, guid: 22f6c0ded1aaa1843b05ca2745032a18, type: 3}
+      propertyPath: requiredCardTypes.Array.data[3]
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 9112684449847333052, guid: 22f6c0ded1aaa1843b05ca2745032a18, type: 3}
+      propertyPath: requiredCardTypes.Array.data[4]
+      value: 4
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

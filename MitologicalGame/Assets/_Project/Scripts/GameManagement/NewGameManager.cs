@@ -27,6 +27,7 @@ namespace _Project.Scripts.GameManagement
         public List<CardType> requiredCardTypes;
         [SerializeField] private readonly Dictionary<int, int> _suspicionToClosedCardChance = new Dictionary<int, int>();
         
+        public RectTransform matchZone;
         
         public int ForesightCount
         {

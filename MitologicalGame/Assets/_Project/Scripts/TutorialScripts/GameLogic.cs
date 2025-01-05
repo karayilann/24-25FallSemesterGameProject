@@ -18,10 +18,12 @@ namespace _Project.Scripts.TutorialScripts
             {
                 if (Input.GetAxis("Mouse ScrollWheel") > 0)
                 {
+                    Debug.Log("Zoom in");
                     mainCam.orthographicSize -= 1;
                 }
                 else if (Input.GetAxis("Mouse ScrollWheel") < 0)
                 {
+                    Debug.Log("Zoom out");
                     mainCam.orthographicSize += 1;
                 }            
             }    

@@ -72,9 +72,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dac61df31de03f749ab9077bf6e1c6f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dropOffset: {x: 1, y: 1, z: 0}
   cardBehaviours: {fileID: 7487100317826601833}
   cardCollider: {fileID: 575626153060850914}
+  dropOffset: {x: 0.5, y: 0.5, z: 0}
   canDrag: 0
   isProccessed: 0
   cardTransform: {fileID: 4877067122784332501}

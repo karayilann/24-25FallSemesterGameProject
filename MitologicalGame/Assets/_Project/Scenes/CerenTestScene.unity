@@ -1657,6 +1657,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 5706692677558346190, guid: 9269b6995c562c84c9dc0b09974dade0, type: 3}
+      propertyPath: m_CullingMask.m_Bits
+      value: 4294967295
+      objectReference: {fileID: 0}
     - target: {fileID: 8967468831227832136, guid: 9269b6995c562c84c9dc0b09974dade0, type: 3}
       propertyPath: m_Name
       value: GAME

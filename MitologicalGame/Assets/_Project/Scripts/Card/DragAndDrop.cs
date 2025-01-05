@@ -2,43 +2,37 @@ using System;
 using System.Collections.Generic;
 using _Project.Scripts.GameManagement;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace _Project.Scripts.Card
 {
     public class DragAndDrop : MonoBehaviour
     {
-        public Vector3 dropOffset;
-        
-        [Header("Card Settings")]
-        public CardBehaviours cardBehaviours;
+        [Header("Card Settings")] public CardBehaviours cardBehaviours;
         public Collider cardCollider;
+        public Vector3 dropOffset;
         public bool canDrag = true;
-        public bool isProccessed;
+        public bool isProcessed;
         private bool _isDropped;
         private bool _isInteracted;
         public RectTransform cardTransform;
-        
-        [Header("Audio Settings")]
-        public AudioSource audioSource;
-        
+
+        [Header("Audio Settings")] public AudioSource audioSource;
+
         //[0]: Hover Sound, [1]: Drag Sound
         public List<AudioClip> audioClips;
-        
+
         private Camera _mainCamera;
-        
         private Vector3 _mousePosition;
         private Vector3 _initialPosition;
-        
-        
+
         private void Awake()
         {
             _mainCamera = Camera.main;
         }
-        
+
         private void OnMouseEnter()
         {
-            if(_isInteracted)return;
+            if (_isInteracted) return;
             PlayHoverSound();
         }
 
@@ -46,16 +40,15 @@ namespace _Project.Scripts.Card
         {
             _isInteracted = false;
         }
-        
-        private Vector3 GetMousePosition()
-        {
-            return _mainCamera.WorldToScreenPoint(transform.position);
-        }
 
         private void OnMouseDown()
         {
             _mousePosition = Input.mousePosition - GetMousePosition();
             _initialPosition = transform.position;
+            if (transform.CompareTag("DroppedCard"))
+            {
+                HandleDroppedCardInteractions();
+            }
         }
 
         private void OnMouseDrag()
@@ -63,26 +56,32 @@ namespace _Project.Scripts.Card
             if (!canDrag) return;
 
             Vector3 newPosition = _mainCamera.ScreenToWorldPoint(Input.mousePosition - _mousePosition);
-    
             transform.position = new Vector3(newPosition.x, newPosition.y, transform.position.z);
-    
+
             Vector3 localPos = transform.localPosition;
-            localPos.z = -12f;
+            localPos.z = _isDropped ? 47f : -12f;
             transform.localPosition = localPos;
-    
+
             PlayHoverSound(1);
             _isInteracted = true;
         }
-        
+
         private void OnMouseUp()
         {
             if (!canDrag) return;
             CheckForHits();
-        
-            if (!isProccessed && !_isDropped)
-            {
-                transform.position = _initialPosition;
-            }
+        }
+
+        private Vector3 GetMousePosition()
+        {
+            return _mainCamera.WorldToScreenPoint(transform.position);
+        }
+
+        private void HandleDroppedCardInteractions()
+        {
+            Debug.Log("Dropped Card Interactions");
+            transform.SetParent(null);
+            transform.tag = "Interactable";
         }
 
         private void PlayHoverSound(int clipIndex = 0)
@@ -92,7 +91,7 @@ namespace _Project.Scripts.Card
                 audioSource.PlayOneShot(audioClips[clipIndex]);
             }
         }
-        
+
         private void CheckForHits()
         {
             var direction = (_mainCamera.transform.position - transform.position).normalized;
@@ -101,32 +100,23 @@ namespace _Project.Scripts.Card
 
             if (hits.Length > 0)
             {
-                bool hitProcessed = false;
                 foreach (var hit in hits)
                 {
                     if (hit.collider != null)
                     {
                         ProcessHit(hit);
-                        hitProcessed = true;
-                        break; // İlk geçerli "hit" işlendiğinde döngüden çık
+                        return;
                     }
                 }
+            }
 
-                if (!hitProcessed)
-                {
-                    transform.position = _initialPosition;
-                }
-            }
-            else
-            {
-                transform.position = _initialPosition;
-            }
+            ResetCardPosition();
         }
 
         private void ProcessHit(RaycastHit hit)
         {
             Debug.Log($"Hit object: {hit.collider.gameObject.name} with tag: {hit.collider.tag}");
-        
+
             switch (hit.collider.tag)
             {
                 case "DropZone":
@@ -139,36 +129,44 @@ namespace _Project.Scripts.Card
                     HandleInteractable(hit.collider.gameObject);
                     break;
                 default:
-                    transform.position = _initialPosition;
+                    ResetCardPosition();
                     break;
             }
         }
 
-        // Buraya atılan kartların yeniden kullanılması için fixle
         private void HandleDropZone(GameObject zone)
         {
+            Debug.Log("Dropped Card to Drop Zone");
+            transform.tag = "DroppedCard";
             transform.SetParent(zone.transform);
-            transform.position = zone.transform.position + dropOffset * zone.transform.childCount;
+            transform.position = zone.transform.position + dropOffset;
             canDrag = true;
             _isDropped = true;
         }
 
         private void HandleDiscardZone(GameObject zone)
         {
+            Debug.Log("Dropped Card to Discard Zone");
             var newGameManager = NewGameManager.Instance;
-            
+            _isDropped = false;
             transform.SetParent(zone.transform);
             transform.position = zone.transform.position + dropOffset * 0.5f;
             newGameManager.discardedCards.Add(cardBehaviours);
             cardCollider.enabled = false;
             newGameManager.isDiscarded = true;
-            isProccessed = true;
+            isProcessed = true;
             canDrag = false;
         }
 
         private void HandleInteractable(GameObject obj)
         {
+            Debug.Log("Dropped Card to Interactable Object");
             obj.GetComponent<CardBehaviours>()?.CheckCard(cardBehaviours);
+        }
+
+        public void ResetCardPosition()
+        {
+            transform.position = _initialPosition;
         }
     }
 }

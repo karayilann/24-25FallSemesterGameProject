@@ -1,13 +1,11 @@
 using System.Collections.Generic;
 using _Project.Scripts.BaseAndInterfaces;
 using _Project.Scripts.GameManagement;
-using TMPro;
 using UnityEngine;
-using UnityEngine.Serialization;
 
 namespace _Project.Scripts.Card
 {
-    public class CardBehaviours : MonoBehaviour, IInteractable
+    public class CardBehaviours : MonoBehaviour
     {
         public CardContainer cardContainer;
         public RectTransform cardTransform;
@@ -16,15 +14,12 @@ namespace _Project.Scripts.Card
         [SerializeField] private CardType _cardType;
         public CardType CardType => _cardType;
         public CardStatus CurrentStatus { get; set; }
-    
-        public DragAndDrop dragAndDrop;
-    
-        private bool _isInitialized = false;
-        private CardBehaviours _selectedCard;
-        private NewGameManager _newGameManager;
 
+        public DragAndDrop dragAndDrop;
+        private bool _isInitialized = false;
+        private NewGameManager _newGameManager;
         public RectTransform matchZone;
-        
+
         private void Start()
         {
             cardContainer = FindObjectOfType<CardContainer>();
@@ -33,132 +28,84 @@ namespace _Project.Scripts.Card
                 Debug.LogError("CardContainer is null");
                 return;
             }
+
             _newGameManager = NewGameManager.Instance;
             _list = cardContainer.cardPositions;
             matchZone = _newGameManager.matchZone;
-            
-            // Drag özelliği artık Initialize'da veya kart açıldığında set edilecek
         }
 
-        public void SetCardType(CardType cardType)
-        {
-            _cardType = cardType;
-        }
-    
         public void Initialize()
         {
             if (_isInitialized) return;
-            
-            CurrentStatus = CardStatus.Opened; // Varsayılan durum - CardContainer'da değiştirilebilir
-            dragAndDrop.canDrag = CurrentStatus == CardStatus.Opened; // Sadece açık kartlar sürüklenebilir
-            
+
+            CurrentStatus = CardStatus.Opened;
+            dragAndDrop.canDrag = CurrentStatus == CardStatus.Opened;
             _isInitialized = true;
         }
 
-        private void OnMouseDown()
-        {
-            if (CurrentStatus == CardStatus.Closed)
-            {
-                cardContainer?.OnCardClicked(gameObject);
-                return;
-            }
-        }
-    
         public void CheckCard(CardBehaviours card)
         {
             if (!card.dragAndDrop.canDrag || CurrentStatus == CardStatus.Closed || card == this) return;
             if (card.CardType == CardType)
             {
-                _selectedCard = card;
                 CorrectCard(card);
             }
             else
             {
                 _newGameManager.ChangeSuspicionCount(+1);
+                card.dragAndDrop.ResetCardPosition();
             }
         }
 
         private void CorrectCard(CardBehaviours card)
         {
             if (!card.dragAndDrop.canDrag || card.CurrentStatus == CardStatus.Closed) return;
-        
+
             if (_newGameManager.CheckForCorrectCardType(card.CardType))
             {
                 OnCardsMatch(card);
                 MoveToCorrectMatchZone();
                 _newGameManager.ChangeForesightCount(+1);
-                Debug.Log("2'lü eşleşme yapıldı");
+                Debug.Log("Matched cards successfully.");
             }
             else
             {
                 _newGameManager.ChangeSuspicionCount(+1);
-                card.dragAndDrop.isProccessed = false;
-                card.dragAndDrop.canDrag = true;
-                Debug.LogWarning("Yanlış 2'lü eşleşme yapıldı");
-                return;
+                card.dragAndDrop.ResetCardPosition();
             }
         }
 
         private void OnCardsMatch(CardBehaviours card)
         {
-            Vector3 targetPos = transform.position;
+            UnityEngine.Vector3 targetPos = transform.position;
             Transform targetParent = transform.parent;
-        
+
             card.transform.SetParent(targetParent);
             card.transform.position = targetPos;
-        
-            Vector3 stackOffset = new Vector3(2f * targetParent.childCount, 2f * targetParent.childCount, 0);
-            card.cardTransform.localPosition = stackOffset;
 
-            card.dragAndDrop.isProccessed = true;
+            card.dragAndDrop.isProcessed = true;
             card.dragAndDrop.canDrag = false;
-            card.cardContainer._cardStatus[card._index] = true;
-        
-            _selectedCard = null;
-            Debug.Log($"Eşleşme yapıldı - Kart: {card.CardType}, Parent: {targetParent.name}");
         }
 
         private void MoveToCorrectMatchZone()
         {
             Transform currentParent = transform.parent;
-    
+
             for (int i = currentParent.childCount - 1; i >= 0; i--)
             {
                 Transform child = currentParent.GetChild(i);
-        
                 child.SetParent(matchZone);
-        
+
                 RectTransform childRect = child.GetComponent<RectTransform>();
                 if (childRect != null)
                 {
                     childRect.localScale *= 0.5f;
-            
-                    childRect.anchoredPosition = new Vector2(0, -10f * i); // Her kartı biraz aşağıya kaydır
-            
-                    Vector3 localPos = childRect.localPosition;
-                    localPos.z = -0.1f * i;
-                    childRect.localPosition = localPos;
-                }
-        
-                var cardBehaviour = child.GetComponent<CardBehaviours>();
-                if (cardBehaviour != null)
-                {
-                    cardBehaviour.dragAndDrop.canDrag = false;
-                    cardBehaviour.dragAndDrop.isProccessed = true;
+                    childRect.anchoredPosition = new UnityEngine.Vector2(0, -10f * i);
                 }
             }
-    
-            Debug.Log($"Kartlar {matchZone.name} alanına taşındı");
-        }
 
-        public void DestroyCards()
-        {
-            //cardContainer.ClearCard(_index);
-        }
-    
-        public void Interact()
-        {
-            throw new System.NotImplementedException();
+            Debug.Log("Cards moved to match zone.");
         }
     }
 }
+

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using _Project.Scripts.GameManagement;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace _Project.Scripts.Card
 {
@@ -16,6 +17,7 @@ namespace _Project.Scripts.Card
         public bool isProccessed;
         private bool _isDropped;
         private bool _isInteracted;
+        public RectTransform cardTransform;
         
         [Header("Audio Settings")]
         public AudioSource audioSource;
@@ -44,14 +46,6 @@ namespace _Project.Scripts.Card
         {
             _isInteracted = false;
         }
-
-        private void PlayHoverSound(int clipIndex = 0)
-        {
-            if (audioSource != null && !audioSource.isPlaying && !_isInteracted)
-            {
-                audioSource.PlayOneShot(audioClips[clipIndex]);
-            }
-        }
         
         private Vector3 GetMousePosition()
         {
@@ -68,7 +62,14 @@ namespace _Project.Scripts.Card
         {
             if (!canDrag) return;
 
-            transform.position = _mainCamera.ScreenToWorldPoint(Input.mousePosition - _mousePosition);
+            Vector3 newPosition = _mainCamera.ScreenToWorldPoint(Input.mousePosition - _mousePosition);
+    
+            transform.position = new Vector3(newPosition.x, newPosition.y, transform.position.z);
+    
+            Vector3 localPos = transform.localPosition;
+            localPos.z = -12f;
+            transform.localPosition = localPos;
+    
             PlayHoverSound(1);
             _isInteracted = true;
         }
@@ -84,6 +85,14 @@ namespace _Project.Scripts.Card
             }
         }
 
+        private void PlayHoverSound(int clipIndex = 0)
+        {
+            if (audioSource != null && !audioSource.isPlaying && !_isInteracted)
+            {
+                audioSource.PlayOneShot(audioClips[clipIndex]);
+            }
+        }
+        
         private void CheckForHits()
         {
             var direction = (_mainCamera.transform.position - transform.position).normalized;

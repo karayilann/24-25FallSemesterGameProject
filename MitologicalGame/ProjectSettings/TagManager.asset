@@ -7,6 +7,7 @@ TagManager:
   - Interactable
   - DropZone
   - DiscardZone
+  - DroppedCard
   layers:
   - Default
   - TransparentFX

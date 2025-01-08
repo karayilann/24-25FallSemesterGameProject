@@ -14,6 +14,7 @@ namespace _Project.Scripts.Card
         public bool isProcessed;
         private bool _isDropped;
         private bool _isInteracted;
+        private string _oldTag;
         public RectTransform cardTransform;
 
         [Header("Audio Settings")] public AudioSource audioSource;
@@ -45,10 +46,8 @@ namespace _Project.Scripts.Card
         {
             _mousePosition = Input.mousePosition - GetMousePosition();
             _initialPosition = transform.position;
-            if (transform.CompareTag("DroppedCard"))
-            {
-                HandleDroppedCardInteractions();
-            }
+            if (!transform.CompareTag($"DroppedCard")) return;
+            HandleDroppedCardInteractions();
         }
 
         private void OnMouseDrag()
@@ -102,14 +101,13 @@ namespace _Project.Scripts.Card
             {
                 foreach (var hit in hits)
                 {
-                    if (hit.collider != null)
+                    if (hit.collider != null && hit.collider.gameObject != gameObject)
                     {
                         ProcessHit(hit);
                         return;
                     }
                 }
             }
-
             ResetCardPosition();
         }
 
@@ -137,7 +135,9 @@ namespace _Project.Scripts.Card
         private void HandleDropZone(GameObject zone)
         {
             Debug.Log("Dropped Card to Drop Zone");
+            _oldTag = transform.tag;
             transform.tag = "DroppedCard";
+            Debug.Log("Old Tag: " + _oldTag + " New Tag: " + transform.tag);
             transform.SetParent(zone.transform);
             transform.position = zone.transform.position + dropOffset;
             canDrag = true;
@@ -167,6 +167,7 @@ namespace _Project.Scripts.Card
         public void ResetCardPosition()
         {
             transform.position = _initialPosition;
+            if(!String.IsNullOrEmpty(_oldTag)) transform.tag = _oldTag;
         }
     }
 }

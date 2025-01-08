@@ -77,7 +77,7 @@ namespace _Project.Scripts.Card
 
         private void OnCardsMatch(CardBehaviours card)
         {
-            UnityEngine.Vector3 targetPos = transform.position;
+            Vector3 targetPos = transform.position;
             Transform targetParent = transform.parent;
 
             card.transform.SetParent(targetParent);
@@ -100,10 +100,9 @@ namespace _Project.Scripts.Card
                 if (childRect != null)
                 {
                     childRect.localScale *= 0.5f;
-                    childRect.anchoredPosition = new UnityEngine.Vector2(0, -10f * i);
+                    childRect.anchoredPosition = new Vector2(-30f * i, 0);
                 }
             }
-
             Debug.Log("Cards moved to match zone.");
         }
     }

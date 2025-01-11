@@ -5,7 +5,7 @@ using _Project.Scripts.BaseAndInterfaces;
 using _Project.Scripts.Card;
 using UnityEngine;
 
-namespace _Project.Prefabs._2DCards._2DCardScripts
+namespace _Project.Scripts._2DCardScripts
 {
     public class CardContainer2D : MonoBehaviour
     {

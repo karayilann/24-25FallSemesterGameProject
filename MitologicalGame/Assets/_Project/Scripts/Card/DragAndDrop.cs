@@ -8,13 +8,14 @@ namespace _Project.Scripts.Card
     public class DragAndDrop : MonoBehaviour
     {
         [Header("Card Settings")] public CardBehaviours cardBehaviours;
-        public Collider cardCollider;
+        public BoxCollider2D cardCollider;
         public Vector3 dropOffset;
         public bool canDrag = true;
         public bool isProcessed;
         private bool _isDropped;
         private bool _isInteracted;
         private string _oldTag;
+        public BoxCollider2D boxCollider2D;
         public RectTransform cardTransform;
 
         [Header("Audio Settings")] public AudioSource audioSource;

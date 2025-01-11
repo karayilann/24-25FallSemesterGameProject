@@ -21,7 +21,7 @@ namespace _Project.Scripts.Card
         private NewGameManager _newGameManager;
         
         private readonly Vector3 _closedRotation = new Vector3(0, 90, 0);
-        private readonly Vector3 _openRotation = new Vector3(0, -90, 0);
+        private readonly Vector3 _openRotation = new Vector3(0, 0, 0);
         
         private void Start()
         {

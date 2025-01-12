@@ -196,7 +196,7 @@ namespace _Project.Scripts._2DCardScripts
                     canDrag = false;
                 });
 
-            transform.DOScale(_initialScale * 0.8f, scaleDownDuration).SetEase(scaleEase);
+            transform.DOScale(_initialScale, scaleDownDuration).SetEase(scaleEase);
         }
 
         private void HandleInteractable(GameObject obj)

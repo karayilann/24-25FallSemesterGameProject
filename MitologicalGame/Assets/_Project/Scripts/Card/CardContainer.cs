@@ -212,7 +212,7 @@ namespace _Project.Scripts.Card
         private GameObject SpawnCard(int positionIndex, int cardIndex)
         {
             GameObject card = Instantiate(_availableCards[cardIndex], cardPositions[positionIndex], true);
-            card.name = $"Card_{positionIndex}";
+            card.name = $"Card {positionIndex}";
             card.transform.position = cardPositions[positionIndex].position;
             card.transform.localScale = _cardSpawnScale;
 

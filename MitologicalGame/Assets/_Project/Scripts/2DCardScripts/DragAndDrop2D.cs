@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using _Project.Scripts.GameManagement;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
@@ -17,8 +16,8 @@ namespace _Project.Scripts._2DCardScripts
         public CanvasGroup canvasGroup;
         public Image cardImage;
         public bool canDrag = true;
-        [HideInInspector] public bool isProcessed;
         public Vector3 dropOffset;
+        [HideInInspector] public bool isProcessed;
         
         [Header("Animation Settings")]
         [SerializeField] private float fadeSpeed = 0.3f;
@@ -31,57 +30,61 @@ namespace _Project.Scripts._2DCardScripts
         
         [Header("Audio Settings")]
         public AudioSource audioSource;
-        public List<AudioClip> audioClips; //[0]: Hover Sound, [1]: Drag Sound
+        public List<AudioClip> audioClips;
 
         private GameManager2D _gameManager2D;
-        [HideInInspector] public bool _isDropped;
+        private bool _isDragging;
         private bool _isInteracted;
+        public bool _isDropped;
         private Vector2 _initialPosition;
-        private RectTransform _oldParent;
         private Vector3 _initialScale;
+        private RectTransform _oldParent;
+        private float _dragCooldown = 0.1f;
+        private float _lastDragTime;
 
         private void Awake()
         {
-            if (canvas == null)
-                canvas = GetComponentInParent<Canvas>();
             _gameManager2D = GameManager2D.Instance;
             _initialScale = transform.localScale;
-        }
-
-        private void Start()
-        {
-            if (cardBehaviours == null)
-                cardBehaviours = GetComponent<CardBehaviours2D>();
-            if (rectTransform == null)
-                rectTransform = GetComponent<RectTransform>();
-            if (canvasGroup == null)
-                canvasGroup = GetComponent<CanvasGroup>();
-            if (cardImage == null)
-                cardImage = GetComponent<Image>();
+            
+            if (canvas == null)
+                canvas = GetComponentInParent<Canvas>();
+            // if (rectTransform == null)
+            //     rectTransform = GetComponent<RectTransform>();
+            // if (canvasGroup == null)
+            //     canvasGroup = GetComponent<CanvasGroup>();
+            // if (cardImage == null)
+            //     cardImage = GetComponent<Image>();
+            // if (cardBehaviours == null)
+            //     cardBehaviours = GetComponent<CardBehaviours2D>();
         }
 
         public void OnBeginDrag(PointerEventData eventData)
         {
-            if (!canDrag) return;
+            if (!canDrag || _isDragging) return;
+            //if (Time.time - _lastDragTime < _dragCooldown) return;
 
-            // Kill all tweens on this object
+            _isDragging = true;
+            //_lastDragTime = Time.time;
+
+            // Kill active tweens
             DOTween.Kill(transform);
             DOTween.Kill(canvasGroup);
 
             _initialPosition = rectTransform.anchoredPosition;
             _oldParent = (RectTransform)transform.parent;
             
-            // Animate fade and scale separately
+            // Start drag animations
             canvasGroup.DOFade(0.6f, fadeSpeed);
             transform.DOScale(_initialScale * 1.05f, scaleUpDuration).SetEase(scaleEase);
             
             canvasGroup.blocksRaycasts = false;
-            PlayHoverSound(1);
+            PlaySound(1);
         }
 
         public void OnDrag(PointerEventData eventData)
         {
-            if (!canDrag) return;
+            if (!canDrag || !_isDragging) return;
 
             RectTransformUtility.ScreenPointToLocalPointInRectangle(
                 canvas.transform as RectTransform,
@@ -90,14 +93,20 @@ namespace _Project.Scripts._2DCardScripts
                 out Vector2 localPoint);
 
             rectTransform.position = canvas.transform.TransformPoint(localPoint);
-            transform.SetParent(_gameManager2D.dragZone);
+            
+            if (transform.parent != _gameManager2D.dragZone)
+            {
+                transform.SetParent(_gameManager2D.dragZone);
+            }
+            
             _isInteracted = true;
         }
 
         public void OnEndDrag(PointerEventData eventData)
         {
-            if (!canDrag) return;
+            if (!canDrag || !_isDragging) return;
 
+            _isDragging = false;
             DOTween.Kill(canvasGroup);
             canvasGroup.DOFade(1f, fadeSpeed);
             canvasGroup.blocksRaycasts = true;
@@ -107,11 +116,10 @@ namespace _Project.Scripts._2DCardScripts
 
         private void CheckForUIHits(PointerEventData eventData)
         {
-            GameObject hitObject = null;
-            
             var results = new List<RaycastResult>();
             EventSystem.current.RaycastAll(eventData, results);
 
+            GameObject hitObject = null;
             foreach (var result in results)
             {
                 if (result.gameObject != gameObject)
@@ -133,8 +141,6 @@ namespace _Project.Scripts._2DCardScripts
 
         private void ProcessHit(GameObject hitObject)
         {
-            Debug.Log($"Hit object: {hitObject.name} with tag: {hitObject.tag}");
-
             switch (hitObject.tag)
             {
                 case "DropZone":
@@ -154,16 +160,14 @@ namespace _Project.Scripts._2DCardScripts
 
         private void HandleDropZone(GameObject zone)
         {
-            if(zone.transform.childCount >= 1)
+            if (zone.transform.childCount >= 1)
             {
-                Debug.Log("Drop Zone is full");
                 ResetCardPosition();
                 return;
             }
 
             transform.SetParent(zone.transform);
             
-            // Create and start animations separately
             rectTransform.DOMove(zone.transform.position + dropOffset, moveSpeed)
                 .SetEase(moveEase)
                 .OnComplete(() => {
@@ -175,15 +179,12 @@ namespace _Project.Scripts._2DCardScripts
                 });
 
             transform.DOScale(_initialScale, scaleDownDuration).SetEase(scaleEase);
-
-            Debug.Log("Dropped Card to Drop Zone");
         }
 
         private void HandleDiscardZone(GameObject zone)
         {
             transform.SetParent(zone.transform);
             
-            // Create and start animations separately
             rectTransform.DOMove(zone.transform.position + dropOffset * 0.5f, moveSpeed)
                 .SetEase(moveEase)
                 .OnComplete(() => {
@@ -196,37 +197,32 @@ namespace _Project.Scripts._2DCardScripts
                 });
 
             transform.DOScale(_initialScale * 0.8f, scaleDownDuration).SetEase(scaleEase);
-
-            Debug.Log("Dropped Card to Discard Zone");
         }
 
         private void HandleInteractable(GameObject obj)
         {
-            Debug.Log("Dropped Card to Interactable Object");
             obj.GetComponent<CardBehaviours2D>()?.CheckCard(cardBehaviours);
         }
 
         public void OnPointerEnter(PointerEventData eventData)
         {
-            if (_isInteracted || !canDrag) return;
+            if (_isInteracted || !canDrag || _isDragging) return;
             
-            // Simple scale animation
             transform.DOScale(_initialScale * hoverScale, scaleUpDuration).SetEase(scaleEase);
-            PlayHoverSound();
+            PlaySound();
         }
 
         public void OnPointerExit(PointerEventData eventData)
         {
-            if (!canDrag) return;
+            if (!canDrag || _isDragging) return;
             
-            // Reset scale
             transform.DOScale(_initialScale, scaleDownDuration).SetEase(scaleEase);
             _isInteracted = false;
         }
 
-        private void PlayHoverSound(int clipIndex = 0)
+        private void PlaySound(int clipIndex = 0)
         {
-            if (audioSource != null && !audioSource.isPlaying && !_isInteracted)
+            if (audioSource != null && audioClips != null && audioClips.Count > clipIndex && !audioSource.isPlaying && !_isInteracted)
             {
                 audioSource.PlayOneShot(audioClips[clipIndex]);
             }
@@ -234,24 +230,33 @@ namespace _Project.Scripts._2DCardScripts
 
         public void ResetCardPosition()
         {
+            cardImage.raycastTarget = false;
             rectTransform.SetParent(_oldParent);
             
-            // Create and start animations separately
-            rectTransform.DOAnchorPos(_initialPosition, moveSpeed).SetEase(moveEase);
-            transform.DOScale(_initialScale, scaleDownDuration).SetEase(scaleEase);
+            rectTransform.DOAnchorPos(_initialPosition, moveSpeed).SetEase(moveEase).OnComplete( () => {
+                transform.DOScale(_initialScale, scaleDownDuration).SetEase(scaleEase).OnComplete( ResetDragState);
+            });
         }
 
-        private void OnDestroy()
+        private void ResetDragState()
         {
-            // Clean up all tweens
-            DOTween.Kill(transform);
-            DOTween.Kill(rectTransform);
-            DOTween.Kill(canvasGroup);
+            canDrag = true;  // Reset drag state
+            _isDragging = false;
+            _isInteracted = false;
+            canvasGroup.blocksRaycasts = true;
+            cardImage.raycastTarget = true;
         }
 
         private void OnDisable()
         {
-            // Clean up tweens when object is disabled
+            DOTween.Kill(transform);
+            DOTween.Kill(rectTransform);
+            DOTween.Kill(canvasGroup);
+            ResetDragState();
+        }
+
+        private void OnDestroy()
+        {
             DOTween.Kill(transform);
             DOTween.Kill(rectTransform);
             DOTween.Kill(canvasGroup);

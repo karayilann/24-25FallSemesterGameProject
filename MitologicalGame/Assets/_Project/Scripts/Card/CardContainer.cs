@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using _Project.Scripts._2DCardScripts;
 using UnityEngine;
 using _Project.Scripts.BaseAndInterfaces;
 using _Project.Scripts.GameManagement;
@@ -28,7 +29,7 @@ namespace _Project.Scripts.Card
         private Dictionary<int, bool> _cardStatus;
         private List<GameObject> _availableCards;
         private List<int> _closedCardPositions;
-        private NewGameManager _newGameManager;
+        private GameManager2D _newGameManager;
         
         private const int TotalCardCount = 25;
         private const int CardsPerType = 5;
@@ -42,7 +43,7 @@ namespace _Project.Scripts.Card
         private void Awake()
         {
             InitializeContainer();
-            _newGameManager = NewGameManager.Instance;
+            _newGameManager = GameManager2D.Instance;
         }
 
         private void Start()
@@ -113,12 +114,12 @@ namespace _Project.Scripts.Card
             _closedCardPositions.Clear();
         }
 
-        public void SetClosedCardsCountBasedOnChance(int chancePercentage)
-        {
-            int maxClosedCards = Mathf.CeilToInt((chancePercentage / 100f) * cardPositions.Count);
-            closedCardsCount = Mathf.Min(maxClosedCards, cardPositions.Count);
-            _closedCardPositions.Clear();
-        }
+        // public void SetClosedCardsCountBasedOnChance(int chancePercentage)
+        // {
+        //     int maxClosedCards = Mathf.CeilToInt((chancePercentage / 100f) * cardPositions.Count);
+        //     closedCardsCount = Mathf.Min(maxClosedCards, cardPositions.Count);
+        //     _closedCardPositions.Clear();
+        // }
 
         public void CheckForEmptyPositions(int chancePercentage = 0)
         {
@@ -285,7 +286,13 @@ namespace _Project.Scripts.Card
             }
 
             cardBehavior.CurrentStatus = isClosed ? CardStatus.Closed : CardStatus.Opened;
-            cardObject.transform.rotation = isClosed ? Quaternion.Euler(_closedRotation) : Quaternion.Euler(_openRotation);
+            if (isClosed)
+            {
+                cardObject.transform.rotation = Quaternion.Euler(_closedRotation);
+                Debug.LogError("Card spawned with state: " + cardBehavior.CurrentStatus);
+            }
+            else
+                cardObject.transform.rotation = Quaternion.Euler(_openRotation);
         }
 
         private void ShuffleCards()

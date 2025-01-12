@@ -116,6 +116,10 @@ namespace _Project.Scripts._2DCardScripts
                 .OnComplete(() => {
                     card.dragAndDrop.isProcessed = true;
                     card.dragAndDrop.canDrag = false;
+                    card.dragAndDrop.cardImage.raycastTarget = false;
+                    this.dragAndDrop.isProcessed = true;
+                    this.dragAndDrop.canDrag = false;
+                    this.dragAndDrop.cardImage.raycastTarget = false;
                 });
         }
         
@@ -140,6 +144,7 @@ namespace _Project.Scripts._2DCardScripts
                     
                     // Set parent immediately
                     child.SetParent(matchZone);
+                    
                     
                     // Add animations to sequence
                     moveSequence.Append(childRect.DOAnchorPos(targetPosition, moveToMatchDuration).SetEase(moveEase));

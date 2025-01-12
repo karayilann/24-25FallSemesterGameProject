@@ -1875,6 +1875,13 @@ MonoBehaviour:
   - {fileID: 1704169490955180786, guid: 8ff906bff00a53744a253b614a8de301, type: 3}
   - {fileID: 7524926806992507792, guid: 327a051f9066f924f92ad690167fcba3, type: 3}
   closedCardsCount: 0
+  cardFlipDuration: 0.5
+  cardSpawnDuration: 0.3
+  cardMoveDuration: 0.3
+  spawnDelay: 0.1
+  cardFlipEase: 7
+  cardSpawnEase: 11
+  cardMoveEase: 15
 --- !u!114 &1640456364
 MonoBehaviour:
   m_ObjectHideFlags: 0

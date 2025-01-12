@@ -17,7 +17,7 @@ namespace _Project.Scripts._2DCardScripts
         public TextMeshProUGUI suspicionCountText;
         public TextMeshProUGUI sentenceText;
         
-        public GameObject popUpNotification;
+        public RectTransform popUpNotification;
         public CardContainer cardContainer;
         
         public bool isDiscarded = false;
@@ -82,18 +82,23 @@ namespace _Project.Scripts._2DCardScripts
             }
             else if(!isDiscarded)
             {
-                popUpNotification.transform.DOLocalMoveY(186.1807f, .5f)
-                    .OnStart(() => popUpNotificationText.text = "Please discard the card first!").OnComplete(() =>
+                popUpNotification.DOAnchorPosY(-50f, .5f)
+                    .OnStart(() => popUpNotificationText.text = "Please discard the card first!")
+                    .OnComplete(() =>
                     {
-                        popUpNotification.transform.DOLocalMoveY(186.1807f, .5f);
+                        DOVirtual.DelayedCall(1f, () => {
+                            popUpNotification.DOAnchorPosY(128f, .5f);
+                        });
                     });
             }
             else if(!isDropped)
             {
-                popUpNotification.transform.DOLocalMoveY(186.1807f, .5f)
+                popUpNotification.DOAnchorPosY(-50f, .5f)
                     .OnStart(() => popUpNotificationText.text = "Please drop the card first!").OnComplete(() =>
                     {
-                        popUpNotification.transform.DOLocalMoveY(186.1807f, .5f);
+                        DOVirtual.DelayedCall(1f, () => {
+                            popUpNotification.DOAnchorPosY(128f, .5f);
+                        });
                     });
             }
         }

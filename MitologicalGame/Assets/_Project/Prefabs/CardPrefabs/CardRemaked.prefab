@@ -164,8 +164,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   cardContainer: {fileID: 8302410459974790595, guid: 7c34c3dbd6a146a4ab01e5dfa8376e82, type: 3}
   cardTransform: {fileID: 1800778907810410157}
-  cardText: {fileID: 618609816941132183}
+  _cardType: 0
   dragAndDrop: {fileID: 3665003711177132303}
+  matchZone: {fileID: 0}
 --- !u!222 &5685779988416279332
 CanvasRenderer:
   m_ObjectHideFlags: 0
@@ -207,11 +208,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dac61df31de03f749ab9077bf6e1c6f9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  dropOffset: {x: 1, y: 1, z: 0}
   cardBehaviours: {fileID: 4057967496413421268}
   cardCollider: {fileID: 1339571983080144863}
+  dropOffset: {x: 1, y: 1, z: 0}
   canDrag: 0
-  isProccessed: 0
+  isProcessed: 0
+  boxCollider2D: {fileID: 0}
+  cardTransform: {fileID: 0}
   audioSource: {fileID: 3574171461647508003}
   audioClips:
   - {fileID: 8300000, guid: 259d63c67792f484ba0f857c09403b19, type: 3}

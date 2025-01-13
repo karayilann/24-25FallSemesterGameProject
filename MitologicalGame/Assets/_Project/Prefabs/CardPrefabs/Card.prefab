@@ -225,8 +225,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   cardContainer: {fileID: 8302410459974790595, guid: 7c34c3dbd6a146a4ab01e5dfa8376e82, type: 3}
-  imageComponent: {fileID: 1482422181533253386}
-  cardTypeTMP: {fileID: 9210355271860515139}
+  cardTransform: {fileID: 0}
+  _cardType: 0
+  dragAndDrop: {fileID: 0}
+  matchZone: {fileID: 0}
 --- !u!114 &3677993841194481812
 MonoBehaviour:
   m_ObjectHideFlags: 0

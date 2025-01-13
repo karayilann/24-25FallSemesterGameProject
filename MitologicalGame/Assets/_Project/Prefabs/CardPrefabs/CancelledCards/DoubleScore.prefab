@@ -14,7 +14,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1887778510665148354, guid: a7945dfd25c8b4345a198dd7cdf595bc, type: 3}
       propertyPath: m_Name
-      value: Card (2) Variant
+      value: DoubleScore
       objectReference: {fileID: 0}
     - target: {fileID: 6422357652515979744, guid: a7945dfd25c8b4345a198dd7cdf595bc, type: 3}
       propertyPath: m_Pivot.x

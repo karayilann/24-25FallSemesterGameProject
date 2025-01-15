@@ -5,32 +5,54 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.Playables;
+using UnityEngine.Rendering;
+using UnityEngine.Rendering.Universal;
 
 namespace _Project.Scripts.UI
 {
     public class MenuManager : MonoBehaviour
     {
+        [Header("Post Processing")]
+        public Volume postProcess;
+        public ChromaticAberration chromatic;
+        public Vignette vignette;
+        
+        [Header("UI Elements")]
         public Camera mainCamera;
         public GameObject gameCanvas;
         public TextMeshProUGUI startText;
         public Vector3 cameraPosition;
         public Vector3 cameraRotation;
-        public PlayableDirector playableDirector;
         public List<Button> buttons;
 
         [SerializeField] private float slideDistance = 1000f;
         [SerializeField] private float animationDuration = 1f; 
         [SerializeField] private float delayBetweenButtons = 0.1f;
+        
+        [Header("Post-Processing Settings")]
+        [SerializeField] private float targetChromaticIntensity = 1f;
+        [SerializeField] private float targetVignetteIntensity = 0.3f;
+        [SerializeField] private float initialChromaticIntensity = 0f;
+        [SerializeField] private float initialVignetteIntensity = 0.1f;
+        
         private bool _canPlay;
+
         private void Awake()
         {
             mainCamera = Camera.main;
             if (mainCamera == null)
             {
-                Debug.LogError("Main Camera bulunamadı. Lütfen sahnede bir Camera ekleyin ve tag'ini MainCamera yapın.");
+                Debug.LogError("Main Camera bulunamadı.");
                 return;
             }
 
+            postProcess.profile.TryGet(out chromatic);
+            postProcess.profile.TryGet(out vignette);
+            
+            // Set initial post-processing values
+            if (chromatic != null) chromatic.intensity.value = initialChromaticIntensity;
+            if (vignette != null) vignette.intensity.value = initialVignetteIntensity;
+            
             cameraPosition = new Vector3(-18.0932007f, 39.7307892f, -33.5708008f);
             cameraRotation = new Vector3(10.6924992f, 150.541504f, 0.00255270908f);
         }
@@ -55,7 +77,7 @@ namespace _Project.Scripts.UI
         {
             if (buttons == null || buttons.Count == 0)
             {
-                Debug.LogWarning("Buton listesi boş. Animasyon çalıştırılamıyor.");
+                Debug.LogWarning("Buton listesi boş");
                 return;
             }
 
@@ -72,19 +94,37 @@ namespace _Project.Scripts.UI
             }
 
             Sequence sequence = DOTween.Sequence();
-
             float totalDuration = buttons.Count * delayBetweenButtons + animationDuration;
 
             sequence.AppendInterval(totalDuration / 2f);
-            sequence.Append(mainCamera.transform.DOMove(cameraPosition, 1f).SetEase(Ease.InOutQuad));
             
-            sequence.Join(mainCamera.transform.DORotate(cameraRotation, 1f).SetEase(Ease.InOutQuad));
+            Sequence parallelSequence = DOTween.Sequence();
             
+            parallelSequence.Join(mainCamera.transform.DOMove(cameraPosition, 1f).SetEase(Ease.InOutQuad));
+            parallelSequence.Join(mainCamera.transform.DORotate(cameraRotation, 1f).SetEase(Ease.InOutQuad));
             
-            sequence.OnComplete(() => startText.text = "Oyuna başlamak için X tuşuna basın.");
+            if (chromatic != null)
+            {
+                parallelSequence.Join(DOTween.To(() => chromatic.intensity.value,
+                    x => chromatic.intensity.value = x,
+                    targetChromaticIntensity,
+                    1f).SetEase(Ease.InOutQuad));
+            }
+            
+            if (vignette != null)
+            {
+                parallelSequence.Join(DOTween.To(() => vignette.intensity.value,
+                    x => vignette.intensity.value = x,
+                    targetVignetteIntensity,
+                    1f).SetEase(Ease.InOutQuad));
+            }
+            
+            sequence.Append(parallelSequence);
+            
+            sequence.OnComplete(() =>
+            {
+                startText.text = "Oyuna başlamak için X tuşuna basın.";
+            });
         }
-        
-        
-        
     }
 }

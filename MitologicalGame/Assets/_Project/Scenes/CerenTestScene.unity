@@ -1110,12 +1110,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9c3548a24b4f52749ab1ef7069f11e56, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  postProcess: {fileID: 1629801052}
+  chromatic: {fileID: 0}
+  vignette: {fileID: 0}
   mainCamera: {fileID: 1824844831}
   gameCanvas: {fileID: 377662292}
   startText: {fileID: 1910775018}
   cameraPosition: {x: -24.43237, y: 42.79651, z: -36.62598}
   cameraRotation: {x: 0, y: 0, z: 0}
-  playableDirector: {fileID: 0}
   buttons:
   - {fileID: 1828636242}
   - {fileID: 1205320724}
@@ -1123,6 +1125,10 @@ MonoBehaviour:
   slideDistance: 1000
   animationDuration: 1
   delayBetweenButtons: 0.1
+  targetChromaticIntensity: 1
+  targetVignetteIntensity: 0.3
+  initialChromaticIntensity: 0
+  initialVignetteIntensity: 0.1
 --- !u!1 &1205320722
 GameObject:
   m_ObjectHideFlags: 0

@@ -13,7 +13,6 @@ GameObject:
   - component: {fileID: 7123527201293714037}
   - component: {fileID: 575626153060850914}
   - component: {fileID: 336613201374051174}
-  - component: {fileID: -8255519169982627870}
   m_Layer: 0
   m_Name: cardBase
   m_TagString: Interactable
@@ -76,7 +75,8 @@ MonoBehaviour:
   cardCollider: {fileID: 575626153060850914}
   dropOffset: {x: 0.5, y: 0.5, z: 0}
   canDrag: 0
-  isProccessed: 0
+  isProcessed: 0
+  boxCollider2D: {fileID: 0}
   cardTransform: {fileID: 4877067122784332501}
   audioSource: {fileID: 336613201374051174}
   audioClips:
@@ -199,28 +199,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!64 &-8255519169982627870
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 89135037076749580}
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_LayerOverridePriority: 0
-  m_IsTrigger: 0
-  m_ProvidesContacts: 0
-  m_Enabled: 0
-  serializedVersion: 5
-  m_Convex: 1
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 0}
 --- !u!1 &1910497864526970210
 GameObject:
   m_ObjectHideFlags: 0

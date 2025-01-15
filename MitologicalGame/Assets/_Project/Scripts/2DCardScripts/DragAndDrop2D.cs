@@ -18,7 +18,7 @@ namespace _Project.Scripts._2DCardScripts
         public bool canDrag = true;
         public Vector3 dropOffset;
         [HideInInspector] public bool isProcessed;
-        
+
         [Header("Animation Settings")]
         [SerializeField] private float fadeSpeed = 0.3f;
         [SerializeField] private float moveSpeed = 0.5f;
@@ -27,7 +27,7 @@ namespace _Project.Scripts._2DCardScripts
         [SerializeField] private float hoverScale = 1.1f;
         [SerializeField] private Ease moveEase = Ease.OutBack;
         [SerializeField] private Ease scaleEase = Ease.OutQuad;
-        
+
         [Header("Audio Settings")]
         public AudioSource audioSource;
         public List<AudioClip> audioClips;
@@ -35,49 +35,50 @@ namespace _Project.Scripts._2DCardScripts
         private GameManager2D _gameManager2D;
         private bool _isDragging;
         private bool _isInteracted;
+        private bool _isPreviewing;
         public bool _isDropped;
         private Vector2 _initialPosition;
         private Vector3 _initialScale;
         private RectTransform _oldParent;
-        private float _dragCooldown = 0.1f;
-        private float _lastDragTime;
+        private RectTransform _dragZone;
 
         private void Awake()
         {
             _gameManager2D = GameManager2D.Instance;
             _initialScale = transform.localScale;
-            
+            _dragZone = _gameManager2D.dragZone;
+
             if (canvas == null)
                 canvas = GetComponentInParent<Canvas>();
-            // if (rectTransform == null)
-            //     rectTransform = GetComponent<RectTransform>();
-            // if (canvasGroup == null)
-            //     canvasGroup = GetComponent<CanvasGroup>();
-            // if (cardImage == null)
-            //     cardImage = GetComponent<Image>();
-            // if (cardBehaviours == null)
-            //     cardBehaviours = GetComponent<CardBehaviours2D>();
+            _oldParent = (RectTransform)transform.parent;
+        }
+
+        private void Update()
+        {
+            if (Input.GetKey(KeyCode.LeftAlt) && !_isPreviewing)
+            {
+                _isPreviewing = true;
+            }
+            else if (Input.GetKeyUp(KeyCode.LeftAlt))
+            {
+                ResetCardPreview();
+            }
         }
 
         public void OnBeginDrag(PointerEventData eventData)
         {
-            if (!canDrag || _isDragging) return;
-            //if (Time.time - _lastDragTime < _dragCooldown) return;
+            if (!canDrag || _isDragging || _isPreviewing) return;
 
             _isDragging = true;
-            //_lastDragTime = Time.time;
 
-            // Kill active tweens
             DOTween.Kill(transform);
             DOTween.Kill(canvasGroup);
 
             _initialPosition = rectTransform.anchoredPosition;
-            _oldParent = (RectTransform)transform.parent;
-            
-            // Start drag animations
+
             canvasGroup.DOFade(0.6f, fadeSpeed);
             transform.DOScale(_initialScale * 1.05f, scaleUpDuration).SetEase(scaleEase);
-            
+
             canvasGroup.blocksRaycasts = false;
             PlaySound(1);
         }
@@ -93,12 +94,12 @@ namespace _Project.Scripts._2DCardScripts
                 out Vector2 localPoint);
 
             rectTransform.position = canvas.transform.TransformPoint(localPoint);
-            
-            if (transform.parent != _gameManager2D.dragZone)
+
+            if (transform.parent != _dragZone)
             {
-                transform.SetParent(_gameManager2D.dragZone);
+                transform.SetParent(_dragZone);
             }
-            
+
             _isInteracted = true;
         }
 
@@ -167,14 +168,14 @@ namespace _Project.Scripts._2DCardScripts
             }
 
             transform.SetParent(zone.transform);
-            
+
             rectTransform.DOMove(zone.transform.position + dropOffset, moveSpeed)
                 .SetEase(moveEase)
                 .OnComplete(() => {
                     cardImage.raycastTarget = false;
                     canDrag = false;
                     _isDropped = true;
-                    _gameManager2D.droppedCards.Add(this.cardBehaviours);
+                    _gameManager2D.droppedCards.Add(cardBehaviours);
                     _gameManager2D.isDropped = true;
                 });
 
@@ -184,7 +185,7 @@ namespace _Project.Scripts._2DCardScripts
         private void HandleDiscardZone(GameObject zone)
         {
             transform.SetParent(zone.transform);
-            
+
             rectTransform.DOMove(zone.transform.position + dropOffset * 0.5f, moveSpeed)
                 .SetEase(moveEase)
                 .OnComplete(() => {
@@ -207,17 +208,29 @@ namespace _Project.Scripts._2DCardScripts
         public void OnPointerEnter(PointerEventData eventData)
         {
             if (_isInteracted || !canDrag || _isDragging) return;
-            
+
             transform.DOScale(_initialScale * hoverScale, scaleUpDuration).SetEase(scaleEase);
             PlaySound();
+
+            if (_isPreviewing)
+            {
+                rectTransform.SetParent(_dragZone);
+                transform.DOScale(_initialScale * hoverScale * 1.5f, scaleUpDuration).SetEase(scaleEase);
+            }
         }
 
         public void OnPointerExit(PointerEventData eventData)
         {
             if (!canDrag || _isDragging) return;
-            
+
+            ResetCardPreview();
+        }
+
+        private void ResetCardPreview()
+        {
+            transform.SetParent(_oldParent);
             transform.DOScale(_initialScale, scaleDownDuration).SetEase(scaleEase);
-            _isInteracted = false;
+            _isPreviewing = false;
         }
 
         private void PlaySound(int clipIndex = 0)
@@ -232,15 +245,15 @@ namespace _Project.Scripts._2DCardScripts
         {
             cardImage.raycastTarget = false;
             rectTransform.SetParent(_oldParent);
-            
-            rectTransform.DOAnchorPos(_initialPosition, moveSpeed).SetEase(moveEase).OnComplete( () => {
-                transform.DOScale(_initialScale, scaleDownDuration).SetEase(scaleEase).OnComplete( ResetDragState);
+
+            rectTransform.DOAnchorPos(_initialPosition, moveSpeed).SetEase(moveEase).OnComplete(() => {
+                transform.DOScale(_initialScale, scaleDownDuration).SetEase(scaleEase).OnComplete(ResetDragState);
             });
         }
 
         private void ResetDragState()
         {
-            canDrag = true;  // Reset drag state
+            canDrag = true;
             _isDragging = false;
             _isInteracted = false;
             canvasGroup.blocksRaycasts = true;

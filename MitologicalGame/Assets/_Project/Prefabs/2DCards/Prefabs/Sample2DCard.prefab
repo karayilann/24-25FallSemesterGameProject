@@ -91,6 +91,8 @@ MonoBehaviour:
   scaleEase: 6
   rotationAmount: 30
   rotationSpeed: 0.1
+  idleRotationAmount: 5
+  idleRotationSpeed: 6
   audioSource: {fileID: 0}
   audioClips: []
   _isDropped: 0

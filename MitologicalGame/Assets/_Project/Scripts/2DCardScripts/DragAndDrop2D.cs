@@ -30,6 +30,11 @@ namespace _Project.Scripts._2DCardScripts
         [SerializeField] private float rotationAmount = 30f;
         [SerializeField] private float rotationSpeed = 0.2f;
 
+        [Header("Idle Rotation Settings")]
+        [SerializeField] private float idleRotationAmount = 5f;
+        [SerializeField] private float idleRotationSpeed = 2f;
+        private bool idleRotationEnabled = false;
+
         [Header("Audio Settings")]
         public AudioSource audioSource;
         public List<AudioClip> audioClips;
@@ -55,6 +60,8 @@ namespace _Project.Scripts._2DCardScripts
             if (canvas == null)
                 canvas = GetComponentInParent<Canvas>();
             _oldParent = (RectTransform)transform.parent;
+
+            StartIdleRotation();
         }
 
         private void Update()
@@ -69,12 +76,47 @@ namespace _Project.Scripts._2DCardScripts
             }
         }
 
+        private void StartIdleRotation()
+        {
+            if (!idleRotationEnabled)
+            {
+                idleRotationEnabled = true;
+                PerformIdleRotation();
+            }
+        }
+
+        private void PerformIdleRotation()
+        {
+            if (!idleRotationEnabled) return;
+
+            transform.DORotateQuaternion(
+                Quaternion.Euler(idleRotationAmount, idleRotationAmount, idleRotationAmount),
+                idleRotationSpeed)
+                .SetEase(Ease.InOutSine)
+                .OnComplete(() =>
+                {
+                    transform.DORotateQuaternion(
+                        Quaternion.Euler(-idleRotationAmount, -idleRotationAmount, -idleRotationAmount),
+                        idleRotationSpeed)
+                        .SetEase(Ease.InOutSine)
+                        .OnComplete(PerformIdleRotation);
+                });
+        }
+
+        private void StopIdleRotation()
+        {
+            idleRotationEnabled = false;
+            DOTween.Kill(transform);
+            transform.DORotateQuaternion(_initialRotation, 0.2f).SetEase(Ease.Linear);
+        }
+
         public void OnBeginDrag(PointerEventData eventData)
         {
             if (!canDrag || _isDragging || _isPreviewing) return;
 
-            _isDragging = true;
+            StopIdleRotation();
 
+            _isDragging = true;
             DOTween.Kill(transform);
             DOTween.Kill(canvasGroup);
 
@@ -108,7 +150,7 @@ namespace _Project.Scripts._2DCardScripts
 
             float deltaX = eventData.delta.x;
             float rotationZ = Mathf.Clamp(deltaX * rotationAmount, -rotationAmount, rotationAmount);
-            
+
             transform.DORotateQuaternion(Quaternion.Euler(0, 0, -rotationZ), rotationSpeed).SetEase(Ease.Linear);
         }
 
@@ -124,6 +166,7 @@ namespace _Project.Scripts._2DCardScripts
             CheckForUIHits(eventData);
 
             transform.DORotateQuaternion(_initialRotation, rotationSpeed).SetEase(Ease.InOutSine);
+            StartIdleRotation();
         }
 
         private void CheckForUIHits(PointerEventData eventData)
@@ -182,7 +225,8 @@ namespace _Project.Scripts._2DCardScripts
 
             rectTransform.DOMove(zone.transform.position + dropOffset, moveSpeed)
                 .SetEase(moveEase)
-                .OnComplete(() => {
+                .OnComplete(() =>
+                {
                     cardImage.raycastTarget = false;
                     canDrag = false;
                     _isDropped = true;
@@ -199,7 +243,8 @@ namespace _Project.Scripts._2DCardScripts
 
             rectTransform.DOMove(zone.transform.position + dropOffset * 0.5f, moveSpeed)
                 .SetEase(moveEase)
-                .OnComplete(() => {
+                .OnComplete(() =>
+                {
                     cardImage.raycastTarget = false;
                     _isDropped = false;
                     _gameManager2D.discardedCards.Add(cardBehaviours);
@@ -257,8 +302,13 @@ namespace _Project.Scripts._2DCardScripts
             cardImage.raycastTarget = false;
             rectTransform.SetParent(_oldParent);
 
-            rectTransform.DOAnchorPos(_initialPosition, moveSpeed).SetEase(moveEase).OnComplete(() => {
-                transform.DOScale(_initialScale, scaleDownDuration).SetEase(scaleEase).OnComplete(ResetDragState);
+            rectTransform.DOAnchorPos(_initialPosition, moveSpeed).SetEase(moveEase).OnComplete(() =>
+            {
+                transform.DOScale(_initialScale, scaleDownDuration).SetEase(scaleEase).OnComplete(() =>
+                {
+                    ResetDragState();
+                    StartIdleRotation();
+                });
             });
         }
 

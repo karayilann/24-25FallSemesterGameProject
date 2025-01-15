@@ -27,6 +27,8 @@ namespace _Project.Scripts._2DCardScripts
         [SerializeField] private float hoverScale = 1.1f;
         [SerializeField] private Ease moveEase = Ease.OutBack;
         [SerializeField] private Ease scaleEase = Ease.OutQuad;
+        [SerializeField] private float rotationAmount = 30f;
+        [SerializeField] private float rotationSpeed = 0.2f;
 
         [Header("Audio Settings")]
         public AudioSource audioSource;
@@ -39,6 +41,7 @@ namespace _Project.Scripts._2DCardScripts
         public bool _isDropped;
         private Vector2 _initialPosition;
         private Vector3 _initialScale;
+        private Quaternion _initialRotation;
         private RectTransform _oldParent;
         private RectTransform _dragZone;
 
@@ -46,6 +49,7 @@ namespace _Project.Scripts._2DCardScripts
         {
             _gameManager2D = GameManager2D.Instance;
             _initialScale = transform.localScale;
+            _initialRotation = transform.rotation;
             _dragZone = _gameManager2D.dragZone;
 
             if (canvas == null)
@@ -101,6 +105,11 @@ namespace _Project.Scripts._2DCardScripts
             }
 
             _isInteracted = true;
+
+            float deltaX = eventData.delta.x;
+            float rotationZ = Mathf.Clamp(deltaX * rotationAmount, -rotationAmount, rotationAmount);
+            
+            transform.DORotateQuaternion(Quaternion.Euler(0, 0, -rotationZ), rotationSpeed).SetEase(Ease.Linear);
         }
 
         public void OnEndDrag(PointerEventData eventData)
@@ -113,6 +122,8 @@ namespace _Project.Scripts._2DCardScripts
             canvasGroup.blocksRaycasts = true;
 
             CheckForUIHits(eventData);
+
+            transform.DORotateQuaternion(_initialRotation, rotationSpeed).SetEase(Ease.InOutSine);
         }
 
         private void CheckForUIHits(PointerEventData eventData)

@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using _Project.Scripts.TutorialScripts;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
@@ -8,6 +9,7 @@ using UnityEngine.UI;
 using UnityEngine.Playables;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.Universal;
+using UnityEngine.Serialization;
 
 namespace _Project.Scripts.UI
 {
@@ -22,6 +24,7 @@ namespace _Project.Scripts.UI
         public string playSubtitle;
         public Vector3 cameraPosition;
         public Vector3 cameraRotation;
+        public TutorialManager tutorialManager;
         public List<Button> buttons;
 
         [Header("Animation Settings")]
@@ -71,12 +74,15 @@ namespace _Project.Scripts.UI
                 gameCanvas.SetActive(true);
                 _canPlay = true;
                 startText.text = "Oyun başladı. Oyunu durdurmak için ESC tuşuna basın.";
+                tutorialManager.StartTutorial();
+                Debug.Log("Oyun başladı.");
             }
             
             if(Input.GetKeyDown(KeyCode.Escape) && _canPlay)
             {
                 gameCanvas.SetActive(false);
                 _canPlay = false;
+                startText.text = "Oyuna başlamak için X tuşuna basın.";
             }
         }
 
@@ -202,6 +208,7 @@ namespace _Project.Scripts.UI
             
             yield return new WaitForSeconds(textDelete);
             playSubtitleText.text = "";
+            playSubtitleText.enabled = false;
         }
         
         

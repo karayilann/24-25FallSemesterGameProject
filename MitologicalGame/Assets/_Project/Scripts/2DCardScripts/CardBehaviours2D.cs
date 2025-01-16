@@ -93,8 +93,8 @@ namespace _Project.Scripts._2DCardScripts
 
             if (_gameManager2D.CheckForCorrectCardType(card.CardType))
             {
-                OnCardsMatch(card);
-                MoveToCorrectMatchZone();
+                // First match the cards, then move them to match zone
+                StartCoroutine(HandleMatchSequence(card));
                 _gameManager2D.ChangeForesightCount(+1);
                 Debug.Log("Matched cards successfully.");
             }
@@ -102,6 +102,32 @@ namespace _Project.Scripts._2DCardScripts
             {
                 StartCoroutine(ShakeAndResetCard(card));
             }
+        }
+
+        private IEnumerator HandleMatchSequence(CardBehaviours2D card)
+        {
+            card.dragAndDrop.canDrag = false;
+            this.dragAndDrop.canDrag = false;
+    
+            Vector3 targetPos = transform.position;
+    
+            yield return card.transform.DOMove(targetPos, moveToMatchDuration)
+                .SetEase(moveEase)
+                .WaitForCompletion();
+    
+            card.dragAndDrop.isProcessed = true;
+            this.dragAndDrop.isProcessed = true;
+            card.dragAndDrop.cardImage.raycastTarget = false;
+            this.dragAndDrop.cardImage.raycastTarget = false;
+    
+            GameObject tempParent = new GameObject("MatchedPair");
+            tempParent.transform.position = transform.position;
+            RectTransform tempRect = tempParent.AddComponent<RectTransform>();
+    
+            card.transform.SetParent(tempRect);
+            transform.SetParent(tempRect);
+    
+            MoveToMatchZone(tempRect);
         }
 
         private void OnCardsMatch(CardBehaviours2D card)
@@ -123,35 +149,26 @@ namespace _Project.Scripts._2DCardScripts
                 });
         }
         
-        private void MoveToCorrectMatchZone()
+        private void MoveToMatchZone(RectTransform cardGroup)
         {
-            Transform currentParent = transform.parent;
-            int childCount = currentParent.childCount;
-            
-            for (int i = childCount - 1; i >= 0; i--)
-            {
-                Transform child = currentParent.GetChild(i);
-                RectTransform childRect = child.GetComponent<RectTransform>();
-                
-                if (childRect != null)
-                {
-                    // Store initial values
-                    Vector2 targetPosition = new Vector2(30f * matchZone.childCount, 0);
-                    Vector3 targetScale = childRect.localScale * 0.5f;
-                    
-                    // Create sequence for smooth transition
-                    Sequence moveSequence = DOTween.Sequence();
-                    
-                    // Set parent immediately
-                    child.SetParent(matchZone);
-                    
-                    
-                    // Add animations to sequence
-                    moveSequence.Append(childRect.DOAnchorPos(targetPosition, moveToMatchDuration).SetEase(moveEase));
-                    moveSequence.Join(childRect.DOScale(targetScale, scaleDownDuration).SetEase(Ease.InOutQuad));
+            Vector2 targetPosition = new Vector2(30f * matchZone.childCount, 0);
+            Vector3 targetScale = cardGroup.localScale * 0.5f;
+    
+            Sequence moveSequence = DOTween.Sequence();
+    
+            cardGroup.SetParent(matchZone);
+    
+            moveSequence.Append(cardGroup.DOAnchorPos(targetPosition, moveToMatchDuration).SetEase(moveEase));
+            moveSequence.Join(cardGroup.DOScale(targetScale, scaleDownDuration).SetEase(Ease.InOutQuad));
+    
+            moveSequence.OnComplete(() => {
+                foreach (Transform child in cardGroup) {
+                    child.localPosition = Vector3.zero;
                 }
-            }
-            Debug.Log("Cards moved to match zone.");
+        
+                Debug.Log("Cards moved to match zone.");
+                _gameManager2D.PlayVideo();
+            });
         }
 
         private void OnDestroy()

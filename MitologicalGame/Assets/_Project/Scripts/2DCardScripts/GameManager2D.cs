@@ -24,11 +24,14 @@ namespace _Project.Scripts._2DCardScripts
         public bool isDropped = false;
         public RectTransform dragZone;
 
+        public GameObject gameCanvas;
+        
         public List<string> sentences;
         
         private int foresightCount;
         private int suspicionCount;
         private int closedCardCount;
+        private int _foundedCardCount;
 
         public List<CardBehaviours2D> discardedCards;
         public List<CardBehaviours2D> droppedCards;
@@ -117,11 +120,21 @@ namespace _Project.Scripts._2DCardScripts
             }
         }
         
+        public void PlayVideo()
+        {
+            if (requiredCardTypes.Count != 0 && _foundedCardCount != 2 ) return;
+            gameCanvas.SetActive(false);
+            Debug.Log("Video is playing.");
+        }
+        
+        
         public bool CheckForCorrectCardType(CardType cardType)
         {
             if (requiredCardTypes.Contains(cardType))
             {
-                Debug.Log("İstenilen kart tipi doğru");
+                requiredCardTypes.Remove(cardType);
+                _foundedCardCount += 1;
+                Debug.Log("İstenilen kart tipi doğru ve listeden çıkarıldı." + cardType);
                 return true;
             }
             Debug.Log("İstenilen kart tipi yanlış");

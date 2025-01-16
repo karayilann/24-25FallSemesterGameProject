@@ -2280,9 +2280,17 @@ PrefabInstance:
     m_TransformParent: {fileID: 0}
     m_Modifications:
     - target: {fileID: 2261004152811059969, guid: 66ff8aeb01411e446ae04a4800c96c77, type: 3}
+      propertyPath: gameCanvas
+      value: 
+      objectReference: {fileID: 377662292}
+    - target: {fileID: 2261004152811059969, guid: 66ff8aeb01411e446ae04a4800c96c77, type: 3}
       propertyPath: popUpNotification
       value: 
       objectReference: {fileID: 2084043183}
+    - target: {fileID: 2261004152811059969, guid: 66ff8aeb01411e446ae04a4800c96c77, type: 3}
+      propertyPath: requiredCardTypes.Array.size
+      value: 2
+      objectReference: {fileID: 0}
     - target: {fileID: 2750163216888215673, guid: 66ff8aeb01411e446ae04a4800c96c77, type: 3}
       propertyPath: m_Pivot.x
       value: 0

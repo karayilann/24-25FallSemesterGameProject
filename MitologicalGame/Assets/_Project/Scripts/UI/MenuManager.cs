@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using DG.Tweening;
 using TMPro;
@@ -12,23 +13,30 @@ namespace _Project.Scripts.UI
 {
     public class MenuManager : MonoBehaviour
     {
-        [Header("Post Processing")]
-        public Volume postProcess;
-        public ChromaticAberration chromatic;
-        public Vignette vignette;
-        
+     
         [Header("UI Elements")]
         public Camera mainCamera;
         public GameObject gameCanvas;
         public TextMeshProUGUI startText;
+        public TextMeshProUGUI playSubtitleText;
+        public string playSubtitle;
         public Vector3 cameraPosition;
         public Vector3 cameraRotation;
         public List<Button> buttons;
 
+        [Header("Animation Settings")]
         [SerializeField] private float slideDistance = 1000f;
         [SerializeField] private float animationDuration = 1f; 
         [SerializeField] private float delayBetweenButtons = 0.1f;
+        [SerializeField] private float cameraAnimationDuration = 1f;
+        [SerializeField] private float textDuration = 0.1f;
+        [SerializeField] private float textDelete = 0.1f;
         
+        [Header("Post Processing")]
+        public Volume postProcess;
+        public ChromaticAberration chromatic;
+        public Vignette vignette;
+
         [Header("Post-Processing Settings")]
         [SerializeField] private float targetChromaticIntensity = 1f;
         [SerializeField] private float targetVignetteIntensity = 0.3f;
@@ -49,7 +57,6 @@ namespace _Project.Scripts.UI
             postProcess.profile.TryGet(out chromatic);
             postProcess.profile.TryGet(out vignette);
             
-            // Set initial post-processing values
             if (chromatic != null) chromatic.intensity.value = initialChromaticIntensity;
             if (vignette != null) vignette.intensity.value = initialVignetteIntensity;
             
@@ -93,6 +100,8 @@ namespace _Project.Scripts.UI
                     .SetEase(Ease.InOutQuad);
             }
 
+            StartCoroutine(PlaySubtitle());
+            
             Sequence sequence = DOTween.Sequence();
             float totalDuration = buttons.Count * delayBetweenButtons + animationDuration;
 
@@ -100,8 +109,8 @@ namespace _Project.Scripts.UI
             
             Sequence parallelSequence = DOTween.Sequence();
             
-            parallelSequence.Join(mainCamera.transform.DOMove(cameraPosition, 1f).SetEase(Ease.InOutQuad));
-            parallelSequence.Join(mainCamera.transform.DORotate(cameraRotation, 1f).SetEase(Ease.InOutQuad));
+            parallelSequence.Join(mainCamera.transform.DOMove(cameraPosition, cameraAnimationDuration).SetEase(Ease.InOutQuad));
+            parallelSequence.Join(mainCamera.transform.DORotate(cameraRotation, cameraAnimationDuration).SetEase(Ease.InOutQuad));
             
             if (chromatic != null)
             {
@@ -182,6 +191,19 @@ namespace _Project.Scripts.UI
                 startText.text = "";
             });
         }
+
+        private IEnumerator PlaySubtitle()
+        {
+            foreach (var letter in playSubtitle)
+            {
+                playSubtitleText.text += letter;
+                yield return new WaitForSeconds(textDuration);
+            }
+            
+            yield return new WaitForSeconds(textDelete);
+            playSubtitleText.text = "";
+        }
+        
         
     }
 }

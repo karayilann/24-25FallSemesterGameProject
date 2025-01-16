@@ -48,7 +48,7 @@ namespace _Project.Scripts._2DCardScripts
             private set
             {
                 foresightCount = value;
-                foresightCountText.text = "Öngörü Puanı: " + foresightCount.ToString();
+                foresightCountText.text =  ":" + foresightCount.ToString();
                 ChangeSentence();
             }
         }
@@ -59,7 +59,7 @@ namespace _Project.Scripts._2DCardScripts
             set
             {
                 suspicionCount = value;
-                suspicionCountText.text = "Şüphe Puanı: " + suspicionCount.ToString();
+                suspicionCountText.text = ":" + suspicionCount.ToString();
                 if(sentences != null)
                     ChangeSentence();
             }

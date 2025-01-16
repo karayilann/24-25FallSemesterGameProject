@@ -135,7 +135,6 @@ namespace _Project.Scripts._2DCardScripts
             Vector3 targetPos = transform.position;
             Transform targetParent = transform.parent;
 
-            // Smooth movement to target position
             card.transform.SetParent(targetParent);
             card.transform.DOMove(targetPos, moveToMatchDuration)
                 .SetEase(moveEase)

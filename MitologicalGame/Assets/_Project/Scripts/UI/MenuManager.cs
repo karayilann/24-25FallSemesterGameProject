@@ -126,5 +126,62 @@ namespace _Project.Scripts.UI
                 startText.text = "Oyuna başlamak için X tuşuna basın.";
             });
         }
+
+        public void ButtonsBack()
+        {
+            if (buttons == null || buttons.Count == 0)
+            {
+                Debug.LogWarning("Buton listesi boş");
+                return;
+            }
+
+            DOTween.Kill(mainCamera.transform);
+    
+            for (int i = 0; i < buttons.Count; i++)
+            {
+                var button = buttons[i];
+                if (button == null) continue;
+
+                float delay = i * delayBetweenButtons;
+
+                button.transform.DOLocalMoveX(0f, animationDuration)
+                    .SetDelay(delay)
+                    .SetEase(Ease.InOutQuad);
+            }
+
+            Sequence sequence = DOTween.Sequence();
+            float totalDuration = buttons.Count * delayBetweenButtons + animationDuration;
+
+            sequence.AppendInterval(totalDuration / 2f);
+    
+            Sequence parallelSequence = DOTween.Sequence();
+    
+            parallelSequence.Join(mainCamera.transform.DOMove(new Vector3(-143.165192f,52.4572678f,-103.645332f), 1f).SetEase(Ease.InOutQuad));
+            parallelSequence.Join(mainCamera.transform.DORotate(new Vector3(10.9019632f,72.810791f,8.69465566e-07f), 1f).SetEase(Ease.InOutQuad));
+    
+            if (chromatic != null)
+            {
+                parallelSequence.Join(DOTween.To(() => chromatic.intensity.value,
+                    x => chromatic.intensity.value = x,
+                    initialChromaticIntensity,
+                    1f).SetEase(Ease.InOutQuad));
+            }
+    
+            if (vignette != null)
+            {
+                parallelSequence.Join(DOTween.To(() => vignette.intensity.value,
+                    x => vignette.intensity.value = x,
+                    initialVignetteIntensity,
+                    1f).SetEase(Ease.InOutQuad));
+            }
+    
+            sequence.Append(parallelSequence);
+    
+            sequence.OnComplete(() =>
+            {
+                startText.text = "";
+            });
+        }
+        
     }
 }

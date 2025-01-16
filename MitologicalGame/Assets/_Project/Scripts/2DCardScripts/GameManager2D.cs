@@ -6,6 +6,7 @@ using DG.Tweening;
 using TMPro;
 using UnityEngine;
 using UnityEngine.Serialization;
+using UnityEngine.Video;
 
 namespace _Project.Scripts._2DCardScripts
 {
@@ -25,6 +26,7 @@ namespace _Project.Scripts._2DCardScripts
         public RectTransform dragZone;
 
         public GameObject gameCanvas;
+        public GameObject videoPlayer;
         
         public List<string> sentences;
         
@@ -123,6 +125,7 @@ namespace _Project.Scripts._2DCardScripts
         public void PlayVideo()
         {
             if (requiredCardTypes.Count != 0 && _foundedCardCount != 2 ) return;
+            videoPlayer.SetActive(true);
             gameCanvas.SetActive(false);
             Debug.Log("Video is playing.");
         }

@@ -196,6 +196,8 @@ namespace _Project.Scripts._2DCardScripts
 
         private void ProcessHit(GameObject hitObject)
         {
+            if (isProcessed) return;
+
             switch (hitObject.tag)
             {
                 case "DropZone":
@@ -215,45 +217,88 @@ namespace _Project.Scripts._2DCardScripts
 
         private void HandleDropZone(GameObject zone)
         {
+            // Check if the zone already has cards
             if (zone.transform.childCount >= 1)
             {
                 ResetCardPosition();
+                PlaySound(2); // Optional error sound
                 return;
             }
 
+            // Disable dragging immediately to prevent multiple drops
+            canDrag = false;
+            cardImage.raycastTarget = false;
+
+            // Kill any ongoing tweens
+            DOTween.Kill(transform);
+            DOTween.Kill(rectTransform);
+
+            // Set the new parent
             transform.SetParent(zone.transform);
 
-            rectTransform.DOMove(zone.transform.position + dropOffset, moveSpeed)
-                .SetEase(moveEase)
-                .OnComplete(() =>
+            // Create a sequence for smooth animation
+            Sequence dropSequence = DOTween.Sequence();
+
+            // Move to drop position
+            dropSequence.Append(rectTransform.DOMove(zone.transform.position + dropOffset, moveSpeed)
+                .SetEase(moveEase));
+
+            // Scale to final size
+            dropSequence.Join(transform.DOScale(_initialScale, scaleDownDuration)
+                .SetEase(scaleEase));
+
+            dropSequence.OnComplete(() =>
+            {
+                _isDropped = true;
+                if (!_gameManager2D.droppedCards.Contains(cardBehaviours))
                 {
-                    cardImage.raycastTarget = false;
-                    canDrag = false;
-                    _isDropped = true;
                     _gameManager2D.droppedCards.Add(cardBehaviours);
                     _gameManager2D.isDropped = true;
-                });
-
-            transform.DOScale(_initialScale, scaleDownDuration).SetEase(scaleEase);
+                }
+                PlaySound(0); // Success sound
+            });
         }
 
         private void HandleDiscardZone(GameObject zone)
         {
+            // Disable dragging immediately
+            canDrag = false;
+            cardImage.raycastTarget = false;
+
+            // Kill any ongoing tweens
+            DOTween.Kill(transform);
+            DOTween.Kill(rectTransform);
+
+            // Set the new parent
             transform.SetParent(zone.transform);
 
-            rectTransform.DOMove(zone.transform.position + dropOffset * 0.5f, moveSpeed)
-                .SetEase(moveEase)
-                .OnComplete(() =>
+            // Create a sequence for smooth animation
+            Sequence discardSequence = DOTween.Sequence();
+
+            Vector3 targetPosition = zone.transform.position + dropOffset * 0.5f;
+    
+            // Move to discard position
+            discardSequence.Append(rectTransform.DOMove(targetPosition, moveSpeed)
+                .SetEase(moveEase));
+
+            // Scale down slightly
+            discardSequence.Join(transform.DOScale(_initialScale * 0.8f, scaleDownDuration)
+                .SetEase(scaleEase));
+
+            // Fade out slightly
+            discardSequence.Join(canvasGroup.DOFade(0.8f, fadeSpeed));
+
+            discardSequence.OnComplete(() =>
+            {
+                _isDropped = false;
+                isProcessed = true;
+                if (!_gameManager2D.discardedCards.Contains(cardBehaviours))
                 {
-                    cardImage.raycastTarget = false;
-                    _isDropped = false;
                     _gameManager2D.discardedCards.Add(cardBehaviours);
                     _gameManager2D.isDiscarded = true;
-                    isProcessed = true;
-                    canDrag = false;
-                });
-
-            transform.DOScale(_initialScale, scaleDownDuration).SetEase(scaleEase);
+                }
+                PlaySound(0); // Success sound
+            });
         }
 
         private void HandleInteractable(GameObject obj)
@@ -299,26 +344,45 @@ namespace _Project.Scripts._2DCardScripts
 
         public void ResetCardPosition()
         {
-            cardImage.raycastTarget = false;
+            // Kill any ongoing tweens
+            DOTween.Kill(transform);
+            DOTween.Kill(rectTransform);
+            DOTween.Kill(canvasGroup);
+
+            // Reset parent
             rectTransform.SetParent(_oldParent);
 
-            rectTransform.DOAnchorPos(_initialPosition, moveSpeed).SetEase(moveEase).OnComplete(() =>
+            // Create sequence for reset animation
+            Sequence resetSequence = DOTween.Sequence();
+
+            // Move back to original position
+            resetSequence.Append(rectTransform.DOAnchorPos(_initialPosition, moveSpeed)
+                .SetEase(moveEase));
+
+            // Reset scale
+            resetSequence.Join(transform.DOScale(_initialScale, scaleDownDuration)
+                .SetEase(scaleEase));
+
+            // Reset opacity
+            resetSequence.Join(canvasGroup.DOFade(1f, fadeSpeed));
+
+            resetSequence.OnComplete(() =>
             {
-                transform.DOScale(_initialScale, scaleDownDuration).SetEase(scaleEase).OnComplete(() =>
-                {
-                    ResetDragState();
-                    StartIdleRotation();
-                });
+                ResetDragState();
+                StartIdleRotation();
             });
         }
 
         private void ResetDragState()
         {
-            canDrag = true;
-            _isDragging = false;
-            _isInteracted = false;
-            canvasGroup.blocksRaycasts = true;
-            cardImage.raycastTarget = true;
+            if (!isProcessed) // Only reset if card hasn't been processed
+            {
+                canDrag = true;
+                _isDragging = false;
+                _isInteracted = false;
+                canvasGroup.blocksRaycasts = true;
+                cardImage.raycastTarget = true;
+            }
         }
 
         private void OnDisable()

@@ -29,6 +29,7 @@ namespace _Project.Scripts._2DCardScripts
         [SerializeField] private Ease scaleEase = Ease.OutQuad;
         [SerializeField] private float rotationAmount = 30f;
         [SerializeField] private float rotationSpeed = 0.2f;
+        [SerializeField] private float smoothFactor;
 
         [Header("Idle Rotation Settings")]
         [SerializeField] private float idleRotationAmount = 5f;
@@ -81,7 +82,7 @@ namespace _Project.Scripts._2DCardScripts
             if (!idleRotationEnabled)
             {
                 idleRotationEnabled = true;
-                PerformIdleRotation();
+                //PerformIdleRotation();
             }
         }
 
@@ -90,13 +91,13 @@ namespace _Project.Scripts._2DCardScripts
             if (!idleRotationEnabled) return;
 
             transform.DORotateQuaternion(
-                Quaternion.Euler(idleRotationAmount, idleRotationAmount, idleRotationAmount),
+                Quaternion.Euler(idleRotationAmount, -idleRotationAmount, idleRotationAmount),
                 idleRotationSpeed)
                 .SetEase(Ease.InOutSine)
                 .OnComplete(() =>
                 {
                     transform.DORotateQuaternion(
-                        Quaternion.Euler(-idleRotationAmount, -idleRotationAmount, -idleRotationAmount),
+                        Quaternion.Euler(-idleRotationAmount, idleRotationAmount, -idleRotationAmount),
                         idleRotationSpeed)
                         .SetEase(Ease.InOutSine)
                         .OnComplete(PerformIdleRotation);
@@ -139,7 +140,9 @@ namespace _Project.Scripts._2DCardScripts
                 canvas.worldCamera,
                 out Vector2 localPoint);
 
-            rectTransform.position = canvas.transform.TransformPoint(localPoint);
+            Vector3 targetPosition = canvas.transform.TransformPoint(localPoint);
+
+            rectTransform.position = Vector3.Lerp(rectTransform.position, targetPosition, smoothFactor * Time.deltaTime);
 
             if (transform.parent != _dragZone)
             {
@@ -153,6 +156,7 @@ namespace _Project.Scripts._2DCardScripts
 
             transform.DORotateQuaternion(Quaternion.Euler(0, 0, -rotationZ), rotationSpeed).SetEase(Ease.Linear);
         }
+
 
         public void OnEndDrag(PointerEventData eventData)
         {
@@ -217,33 +221,26 @@ namespace _Project.Scripts._2DCardScripts
 
         private void HandleDropZone(GameObject zone)
         {
-            // Check if the zone already has cards
             if (zone.transform.childCount >= 1)
             {
                 ResetCardPosition();
-                PlaySound(2); // Optional error sound
+                PlaySound(2);
                 return;
             }
 
-            // Disable dragging immediately to prevent multiple drops
             canDrag = false;
             cardImage.raycastTarget = false;
 
-            // Kill any ongoing tweens
             DOTween.Kill(transform);
             DOTween.Kill(rectTransform);
 
-            // Set the new parent
             transform.SetParent(zone.transform);
 
-            // Create a sequence for smooth animation
             Sequence dropSequence = DOTween.Sequence();
 
-            // Move to drop position
             dropSequence.Append(rectTransform.DOMove(zone.transform.position + dropOffset, moveSpeed)
                 .SetEase(moveEase));
 
-            // Scale to final size
             dropSequence.Join(transform.DOScale(_initialScale, scaleDownDuration)
                 .SetEase(scaleEase));
 
@@ -255,37 +252,30 @@ namespace _Project.Scripts._2DCardScripts
                     _gameManager2D.droppedCards.Add(cardBehaviours);
                     _gameManager2D.isDropped = true;
                 }
-                PlaySound(0); // Success sound
+                PlaySound(0);
             });
         }
 
         private void HandleDiscardZone(GameObject zone)
         {
-            // Disable dragging immediately
             canDrag = false;
             cardImage.raycastTarget = false;
 
-            // Kill any ongoing tweens
             DOTween.Kill(transform);
             DOTween.Kill(rectTransform);
 
-            // Set the new parent
             transform.SetParent(zone.transform);
 
-            // Create a sequence for smooth animation
             Sequence discardSequence = DOTween.Sequence();
 
             Vector3 targetPosition = zone.transform.position + dropOffset * 0.5f;
     
-            // Move to discard position
             discardSequence.Append(rectTransform.DOMove(targetPosition, moveSpeed)
                 .SetEase(moveEase));
 
-            // Scale down slightly
-            discardSequence.Join(transform.DOScale(_initialScale * 0.8f, scaleDownDuration)
+            discardSequence.Join(transform.DOScale(_initialScale, scaleDownDuration)
                 .SetEase(scaleEase));
 
-            // Fade out slightly
             discardSequence.Join(canvasGroup.DOFade(0.8f, fadeSpeed));
 
             discardSequence.OnComplete(() =>
@@ -297,7 +287,7 @@ namespace _Project.Scripts._2DCardScripts
                     _gameManager2D.discardedCards.Add(cardBehaviours);
                     _gameManager2D.isDiscarded = true;
                 }
-                PlaySound(0); // Success sound
+                PlaySound(0);
             });
         }
 
@@ -344,26 +334,22 @@ namespace _Project.Scripts._2DCardScripts
 
         public void ResetCardPosition()
         {
-            // Kill any ongoing tweens
+            canDrag = false;
+            _isDragging = true;
             DOTween.Kill(transform);
             DOTween.Kill(rectTransform);
             DOTween.Kill(canvasGroup);
 
-            // Reset parent
             rectTransform.SetParent(_oldParent);
 
-            // Create sequence for reset animation
             Sequence resetSequence = DOTween.Sequence();
 
-            // Move back to original position
             resetSequence.Append(rectTransform.DOAnchorPos(_initialPosition, moveSpeed)
                 .SetEase(moveEase));
 
-            // Reset scale
             resetSequence.Join(transform.DOScale(_initialScale, scaleDownDuration)
                 .SetEase(scaleEase));
 
-            // Reset opacity
             resetSequence.Join(canvasGroup.DOFade(1f, fadeSpeed));
 
             resetSequence.OnComplete(() =>
@@ -375,7 +361,7 @@ namespace _Project.Scripts._2DCardScripts
 
         private void ResetDragState()
         {
-            if (!isProcessed) // Only reset if card hasn't been processed
+            if (!isProcessed)
             {
                 canDrag = true;
                 _isDragging = false;

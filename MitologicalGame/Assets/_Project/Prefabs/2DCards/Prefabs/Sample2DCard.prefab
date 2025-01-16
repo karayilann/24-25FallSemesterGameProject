@@ -91,6 +91,7 @@ MonoBehaviour:
   scaleEase: 6
   rotationAmount: 30
   rotationSpeed: 0.1
+  smoothFactor: 25
   idleRotationAmount: 5
   idleRotationSpeed: 6
   audioSource: {fileID: 0}

@@ -15,7 +15,7 @@ PrefabInstance:
     - target: {fileID: 3838514196792715948, guid: c1763a93532b33e44884fba8d7556e63, type: 3}
       propertyPath: m_Sprite
       value: 
-      objectReference: {fileID: 21300000, guid: 4800b39673e005a4fa656a8743c70667, type: 3}
+      objectReference: {fileID: 21300000, guid: 9ccbc88d57771214cbe0d06ffeb3ac47, type: 3}
     - target: {fileID: 5707332018248071488, guid: c1763a93532b33e44884fba8d7556e63, type: 3}
       propertyPath: m_Name
       value: Sample2DCard Variant 4

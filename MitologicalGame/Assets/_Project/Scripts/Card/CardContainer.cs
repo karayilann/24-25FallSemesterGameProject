@@ -31,7 +31,7 @@ namespace _Project.Scripts.Card
         private List<int> _closedCardPositions;
         private GameManager2D _newGameManager;
         
-        private const int TotalCardCount = 25;
+        private const int TotalCardCount = 70;
         private const int CardsPerType = 5;
         
         private readonly Vector3 _closedRotation = new Vector3(0, 90, 0);

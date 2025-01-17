@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using _Project.Scripts.BaseAndInterfaces;
 using _Project.Scripts.Card;
 using _Project.Scripts.CoreScripts;
+using _Project.Scripts.TutorialScripts;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
@@ -25,6 +26,7 @@ namespace _Project.Scripts._2DCardScripts
         public bool isDropped = false;
         public RectTransform dragZone;
 
+        public TutorialManager tutorialManager;
         public GameObject gameCanvas;
         public GameObject videoPlayer;
         
@@ -135,6 +137,7 @@ namespace _Project.Scripts._2DCardScripts
         {
             if (requiredCardTypes.Contains(cardType))
             {
+                tutorialManager.correctAnswer = true;
                 requiredCardTypes.Remove(cardType);
                 _foundedCardCount += 1;
                 Debug.Log("İstenilen kart tipi doğru ve listeden çıkarıldı." + cardType);

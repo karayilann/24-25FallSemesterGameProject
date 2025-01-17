@@ -72,9 +72,9 @@ namespace _Project.Scripts.UI
             if (Input.GetKeyDown(KeyCode.X) && !_canPlay)
             {
                 gameCanvas.SetActive(true);
-                _canPlay = true;
-                startText.text = "Oyun başladı. Oyunu durdurmak için ESC tuşuna basın.";
                 tutorialManager.StartTutorial();
+                _canPlay = true;
+                //startText.text = "Oyun başladı. Oyunu durdurmak için ESC tuşuna basın.";
                 Debug.Log("Oyun başladı.");
             }
             

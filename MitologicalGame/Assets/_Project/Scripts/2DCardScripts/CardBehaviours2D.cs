@@ -32,16 +32,17 @@ namespace _Project.Scripts._2DCardScripts
         [SerializeField] private float scaleDownDuration = 0.3f;
         [SerializeField] private Ease moveEase = Ease.OutBack;
 
-        private void Start()
+        private void Awake()
         {
-            cardContainer = FindObjectOfType<CardContainer>();
-            if (cardContainer == null)
-            {
-                Debug.LogError("CardContainer is null");
-                return;
-            }
+            // cardContainer = FindObjectOfType<CardContainer>();
+            // if (cardContainer == null)
+            // {
+            //     Debug.LogError("CardContainer is null");
+            //     return;
+            // }
 
             _gameManager2D = GameManager2D.Instance;
+            cardContainer = _gameManager2D.cardContainer;
             _list = cardContainer.cardPositions;
             matchZone = _gameManager2D.matchZone;
         }

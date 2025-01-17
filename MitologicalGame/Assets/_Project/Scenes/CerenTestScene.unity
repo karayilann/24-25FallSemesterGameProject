@@ -2766,6 +2766,18 @@ PrefabInstance:
       value: "K\xFCllerle dolu bir vadiden, yitip giden halk\u0131n yank\u0131s\u0131
         y\xFCkseldi "
       objectReference: {fileID: 0}
+    - target: {fileID: 57333132100792044, guid: 66ff8aeb01411e446ae04a4800c96c77, type: 3}
+      propertyPath: m_fontSize
+      value: 35
+      objectReference: {fileID: 0}
+    - target: {fileID: 57333132100792044, guid: 66ff8aeb01411e446ae04a4800c96c77, type: 3}
+      propertyPath: m_fontSizeBase
+      value: 35
+      objectReference: {fileID: 0}
+    - target: {fileID: 1917645492194796408, guid: 66ff8aeb01411e446ae04a4800c96c77, type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 928.61
+      objectReference: {fileID: 0}
     - target: {fileID: 2261004152811059969, guid: 66ff8aeb01411e446ae04a4800c96c77, type: 3}
       propertyPath: videoPlayer
       value: 

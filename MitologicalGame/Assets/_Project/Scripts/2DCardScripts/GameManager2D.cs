@@ -127,7 +127,7 @@ namespace _Project.Scripts._2DCardScripts
         public void PlayVideo()
         {
             if (requiredCardTypes.Count != 0 && _foundedCardCount != 2 ) return;
-            videoPlayer.SetActive(true);
+           // videoPlayer.SetActive(true);
             gameCanvas.SetActive(false);
             Debug.Log("Video is playing.");
         }

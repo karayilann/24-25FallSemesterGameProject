@@ -23,15 +23,15 @@ namespace _Project.Scripts.TutorialScripts
         public TextMeshProUGUI tutorialKeyText;
         public CanvasGroup canvasGroup;
         public GameObject cardLayer;
-        public GameObject suspicionImage;
         public GameObject suspicionText;
-        public GameObject foresightImage;
         public GameObject foresightText;
         public GameObject sentenceText;
         public GameObject cardDeck;
         public GameObject discardZone;
         public Button nextRoundButton;
+        public AudioSource audioSource;
         public List<GameObject> dropZones;
+        public List<AudioClip> audioClips;
 
         private int currentChapter = 0;
         public bool isPassedChapter;
@@ -134,9 +134,7 @@ namespace _Project.Scripts.TutorialScripts
             discardZone.SetActive(false);
             cardDeck.SetActive(false);
             cardLayer.SetActive(false);
-            suspicionImage.SetActive(false);
             suspicionText.SetActive(false);
-            foresightImage.SetActive(false);
             foresightText.SetActive(false);
             sentenceText.SetActive(false);
             nextRoundButton.gameObject.SetActive(false);
@@ -156,13 +154,25 @@ namespace _Project.Scripts.TutorialScripts
             ChangeVignetteIntensity(0.44f);
             ChangeVignetteCenter(new Vector2(0.5f, 0.41f));
             
+            //audioSource.Play(audioClips[0]);
+
+            audioSource.clip = audioClips[0];
+            audioSource.Play();
+            
             tutorialText.text = " Babamın kitaplarında keşfettiğim bu simgeler Albert'ın rüyalarını yorumlamam için bana yardımcı olacak. " +
                                 "Her simge 5 temel duygudan birini yansıtıyor." +
                                 "\nSevinç, Korku, Hüzün, Acı, Öfke\n" +
                                 "Aynı duyguyu yansıtan simgeleri eşleştirmem gerekiyor ama hangi duygular?";
+            //StartCoroutine(WaitForSound());
             Debug.Log("Chapter One started.");
         }
 
+        // IEnumerator WaitForSound()
+        // {
+        //     yield return new WaitUntil((() => !audioSource.isPlaying));
+        //     AdvanceToNextChapter();
+        // }
+        
         private void ChapterTwo()
         {
             isPassedChapter = false;
@@ -172,12 +182,18 @@ namespace _Project.Scripts.TutorialScripts
             ChangeVignetteIntensity(0.725f);
             ChangeVignetteCenter(new Vector2(0.5f, 0.68f));
             
+            audioSource.Stop();
+            audioSource.clip = audioClips[1];
+            audioSource.Play();
+            
             tutorialText.text = "Albert'ın söylediklerini doğru yorumlarsam hangi duygunun vurgulandığını anlarım. Sanırım birden fazla duygu da olabilir.";
+            //StartCoroutine(WaitForSound());
             Debug.Log("Chapter Two started.");
         }
 
         private void ChapterThree()
         {
+            audioSource.Stop();
             isPassedChapter = false;
             
             ChangeVignetteRoundness(true);
@@ -289,9 +305,7 @@ namespace _Project.Scripts.TutorialScripts
             discardZone.SetActive(true);
             cardDeck.SetActive(true);
             cardLayer.SetActive(true);
-            suspicionImage.SetActive(true);
             suspicionText.SetActive(true);
-            foresightImage.SetActive(true);
             foresightText.SetActive(true);
             sentenceText.SetActive(true);
             nextRoundButton.enabled = true;
